@@ -67,6 +67,6 @@
         "*.sln": "*.csproj",
         "*.slnx": "*.csproj"
     },
-    "dotnet.defaultSolution": "Mystery.slnx",
+    "dotnet.defaultSolution": "Mysterys.slnx",
     "dotnet.enableWorkspaceBasedDevelopment": false
 }
