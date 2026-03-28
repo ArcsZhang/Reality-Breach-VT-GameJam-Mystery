@@ -9,6 +9,8 @@ public class AbilityManager : MonoBehaviour
     {
         public Transform Target;
         public Vector3 OriginalPosition;
+        public bool WasShifted;
+        public bool WasHiddenInStrip;
         public Rigidbody2D Body;
         public bool HadBody;
         public bool BodySimulated;
@@ -39,6 +41,11 @@ public class AbilityManager : MonoBehaviour
     [SerializeField] private float minimumFoldDistance = 0.05f;
     [SerializeField] private float lineHalfLength = 40f;
     [SerializeField] private float unfoldNodeRadius = 0.25f;
+
+    [Header("Initial Fold")]
+    [SerializeField] private bool applyInitialFoldOnStart;
+    [SerializeField] private Vector2 initialFoldPointA = new Vector2(-3f, 0f);
+    [SerializeField] private Vector2 initialFoldPointB = new Vector2(3f, 0f);
 
     [Header("Visuals")]
     [SerializeField] private Color previewLineColor = new Color(1f, 0.85f, 0.2f, 0.8f);
@@ -80,6 +87,7 @@ public class AbilityManager : MonoBehaviour
         InitializeVisuals();
         HidePreviewVisuals();
         SetActiveFoldVisualsVisible(false);
+        TryApplyInitialFold();
     }
 
     private void Update()
@@ -237,6 +245,22 @@ public class AbilityManager : MonoBehaviour
         FoldApplied?.Invoke(activeFold);
     }
 
+    private void TryApplyInitialFold()
+    {
+        if (!applyInitialFoldOnStart || hasActiveFold)
+        {
+            return;
+        }
+
+        if (!FoldGeometry2D.TryBuildFold(initialFoldPointA, initialFoldPointB, out FoldData2D initialFold, minimumFoldDistance))
+        {
+            Debug.LogWarning("Initial fold points are too close. Skipping initial fold.", this);
+            return;
+        }
+
+        ApplyFold(initialFold, initialFoldPointA);
+    }
+
     private void ShiftNonFoldableObjects(FoldData2D fold)
     {
         nonFoldableStates.Clear();
@@ -267,6 +291,8 @@ public class AbilityManager : MonoBehaviour
             }
 
             NonFoldableState state = CaptureNonFoldableState(candidate, worldPosition);
+            state.WasHiddenInStrip = fullyInsideStrip;
+            state.WasShifted = fullyOnShiftedSide;
             nonFoldableStates[candidate] = state;
 
             if (fullyInsideStrip)
@@ -294,6 +320,8 @@ public class AbilityManager : MonoBehaviour
             return;
         }
 
+        Vector2 unshiftDelta = activeFold.Normal * activeFold.Gap;
+
         foreach (KeyValuePair<Transform, NonFoldableState> entry in nonFoldableStates)
         {
             NonFoldableState state = entry.Value;
@@ -303,20 +331,38 @@ public class AbilityManager : MonoBehaviour
                 continue;
             }
 
-            if (state.HadBody && state.Body != null)
+            if (state.WasShifted)
             {
-                state.Body.position = new Vector2(state.OriginalPosition.x, state.OriginalPosition.y);
-                state.Body.linearVelocity = state.BodyVelocity;
-                state.Body.angularVelocity = state.BodyAngularVelocity;
-                state.Body.simulated = state.BodySimulated;
+                if (state.HadBody && state.Body != null)
+                {
+                    state.Body.position += unshiftDelta;
+                }
+                else
+                {
+                    target.position += new Vector3(unshiftDelta.x, unshiftDelta.y, 0f);
+                }
             }
             else
             {
-                target.position = state.OriginalPosition;
+                if (state.HadBody && state.Body != null)
+                {
+                    state.Body.position = new Vector2(state.OriginalPosition.x, state.OriginalPosition.y);
+                }
+                else
+                {
+                    target.position = state.OriginalPosition;
+                }
             }
 
             RestoreEnabledFlags(state.Renderers, state.RendererEnabled);
             RestoreEnabledFlags(state.Colliders, state.ColliderEnabled);
+
+            if (state.HadBody && state.Body != null)
+            {
+                state.Body.linearVelocity = state.BodyVelocity;
+                state.Body.angularVelocity = state.BodyAngularVelocity;
+                state.Body.simulated = state.BodySimulated;
+            }
         }
 
         nonFoldableStates.Clear();

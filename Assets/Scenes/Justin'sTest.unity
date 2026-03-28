@@ -291,7 +291,7 @@ GameObject:
   - component: {fileID: 255675901}
   - component: {fileID: 255675900}
   m_Layer: 0
-  m_Name: FoldManager
+  m_Name: AbilityManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -312,11 +312,13 @@ MonoBehaviour:
   abilityInputEnabled: 1
   activeAbility: 0
   foldMouseButton: 0
-  clearFoldKey: 17
   worldCamera: {fileID: 0}
   minimumFoldDistance: 0.05
   lineHalfLength: 40
   unfoldNodeRadius: 0.25
+  applyInitialFoldOnStart: 1
+  initialFoldPointA: {x: -3, y: 0}
+  initialFoldPointB: {x: 3, y: 0}
   previewLineColor: {r: 1, g: 0.85, b: 0.2, a: 0.8}
   previewStripColor: {r: 1, g: 0.85, b: 0.2, a: 0.14}
   activeSeamColor: {r: 0.49, g: 0.83, b: 0.99, a: 0.95}

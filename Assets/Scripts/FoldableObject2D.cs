@@ -15,6 +15,7 @@ public class FoldableObject2D : MonoBehaviour
     private MeshRenderer meshRenderer;
     private Mesh runtimeMesh;
     private Vector2[] originalSourcePoints;
+    private bool isInitialized;
 
     private readonly List<Vector3> meshVertices = new List<Vector3>();
     private readonly List<int> meshTriangles = new List<int>();
@@ -22,21 +23,14 @@ public class FoldableObject2D : MonoBehaviour
 
     private void Awake()
     {
-        meshFilter = GetComponent<MeshFilter>();
-        meshRenderer = GetComponent<MeshRenderer>();
-
-        if (polygonCollider2D == null)
-        {
-            polygonCollider2D = GetComponent<PolygonCollider2D>();
-        }
-
-        InitializeSourcePoints();
-        BuildFromPolygons(new List<Vector2>(sourcePoints), null, updateCollider: true);
+        EnsureInitialized();
     }
 
     [ContextMenu("Capture Source Points From Collider")]
     public void CaptureSourcePointsFromCollider()
     {
+        EnsureInitialized();
+
         if (polygonCollider2D == null || polygonCollider2D.pathCount == 0)
         {
             Debug.LogWarning("No PolygonCollider2D path found to capture.", this);
@@ -50,6 +44,8 @@ public class FoldableObject2D : MonoBehaviour
 
     public void ApplyFold(FoldData2D fold)
     {
+        EnsureInitialized();
+
         List<Vector2> worldPolygon = new List<Vector2>(originalSourcePoints.Length);
         for (int i = 0; i < originalSourcePoints.Length; i++)
         {
@@ -68,7 +64,28 @@ public class FoldableObject2D : MonoBehaviour
 
     public void ResetFold()
     {
+        EnsureInitialized();
         BuildFromPolygons(new List<Vector2>(originalSourcePoints), null, updateCollider: true);
+    }
+
+    private void EnsureInitialized()
+    {
+        if (isInitialized)
+        {
+            return;
+        }
+
+        meshFilter = GetComponent<MeshFilter>();
+        meshRenderer = GetComponent<MeshRenderer>();
+
+        if (polygonCollider2D == null)
+        {
+            polygonCollider2D = GetComponent<PolygonCollider2D>();
+        }
+
+        InitializeSourcePoints();
+        BuildFromPolygons(new List<Vector2>(sourcePoints), null, updateCollider: true);
+        isInitialized = true;
     }
 
     private void InitializeSourcePoints()
