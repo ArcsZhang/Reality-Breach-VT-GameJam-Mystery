@@ -1,10 +1,16 @@
 using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class SnapshotAbility : Ability
 {
+    private sealed class CapturedObject
+    {
+        public GameObject Original;
+        public Vector2 OffsetFromCenter;  // The offset from the snapshot rectangle's center to the object's position at the time of capture
+    }
 
     public struct SnapshotRectangle2D
     {
@@ -29,6 +35,7 @@ public class SnapshotAbility : Ability
     private Vector2 dragStartPoint; // Where you started dragging (world)
     private Vector2 dragEndPoint;
     private Boolean isDraggingSnapshot;
+    private Boolean isHoldingSnapshot;  // Whether we've taken a snapshot and are now holding it, waiting to place it
 
 
     private bool hasActiveSnapshot;  // Whether a snapshot is currently active in the world (after releasing mouse)
@@ -40,6 +47,10 @@ public class SnapshotAbility : Ability
     private MeshRenderer previewFillMeshRenderer;
     private Mesh previewFillMesh;
 
+    private SnapshotableObject[] snapshottables;   // Array of all snapshottable objects in this GameObject and its children
+    private CapturedObject[] currentSnapshot;
+
+
 
     public void Awake()
     {
@@ -48,6 +59,8 @@ public class SnapshotAbility : Ability
             WorldCamera = Camera.main;
         }
         InitializeVisuals();
+        CacheSnapshottables();  // Get all snapshottable objects on startup
+
     }
 
     public override void onAbilitySwitch()
@@ -87,8 +100,9 @@ public class SnapshotAbility : Ability
 
         if (mouse.leftButton.wasReleasedThisFrame)
         {
+            if (hasPreviewSnapshot) // There is a preview to use
+                takeSnapshot(previewSnapshot);
             cancelSnapshotSelection();
-            Debug.Log("Cancelled snapshot selection");
             return;
         }
 
@@ -125,10 +139,17 @@ public class SnapshotAbility : Ability
         hasPreviewSnapshot = true;
         previewSnapshot = rect;
         updatePreviewVisuals(rect);
+
+        for (int i = 0; i < snapshottables.Length; i++)
+        {
+            if (snapshottables[i] == null) continue;
+            snapshottables[i].SetHighlighted(OverlapsRect(snapshottables[i], rect));  // Hightlight if overlaps, otherwise not
+        }
+
     }
 
 
-// Handle visuals. 
+    // Handle visuals. 
     private void updatePreviewVisuals(SnapshotRectangle2D rect) 
     {
 
@@ -188,13 +209,66 @@ public class SnapshotAbility : Ability
         hasPreviewSnapshot = false;
         previewBorderLineRenderer.enabled = false;
         previewFillMeshRenderer.enabled = false;
+
+        for (int i = 0; i < snapshottables.Length; i++)
+        {
+            if (snapshottables[i] != null)
+                snapshottables[i].SetHighlighted(false);
+        }
+    }
+
+    private void CacheSnapshottables()
+    {
+        // Caches all Snapshottable components on this GameObject and its children for quick access later
+        snapshottables = FindObjectsByType<SnapshotableObject>();
+        Debug.Log($"There are {snapshottables.Length} objects in snapshottables");
     }
 
 
-
-    private void takeSnapshot()
+    private void takeSnapshot(SnapshotRectangle2D rect)
     {
+        Debug.Log("Taking snapshot now");
+        // Loop over all snapshottable objects and check if 
+        if (isHoldingSnapshot) return;  // already holding one, can't take another
 
+        Vector2 center = (rect.Min + rect.Max) * 0.5f;
+        List<CapturedObject> captured = new List<CapturedObject>();
+
+        for (int i = 0; i < snapshottables.Length; i++)
+        {
+            if (snapshottables[i] == null) continue;
+
+            Vector2 objectPos = snapshottables[i].transform.position;
+
+            if (!OverlapsRect(snapshottables[i], rect)) {
+                continue;
+            } 
+
+            // Capture it
+            snapshottables[i].Freeze();
+
+            CapturedObject cap = new CapturedObject
+            {
+                Original = snapshottables[i].gameObject,
+                OffsetFromCenter = objectPos - center
+            };
+
+            captured.Add(cap);
+        }
+        Debug.Log("Captured " + captured.Count + " objects in snapshot");
+
+    }
+
+    private bool OverlapsRect(SnapshotableObject obj, SnapshotRectangle2D rect)
+    {
+        Collider2D col = obj.GetComponent<Collider2D>();
+        if (col != null)
+        {
+            Bounds b = col.bounds;
+            return b.min.x <= rect.Max.x && b.max.x >= rect.Min.x &&
+                   b.min.y <= rect.Max.y && b.max.y >= rect.Min.y;
+        }
+        return rect.Contains(obj.transform.position);
     }
 
     private void releaseSnapshot()

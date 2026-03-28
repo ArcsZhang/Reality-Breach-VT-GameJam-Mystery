@@ -5,8 +5,8 @@ using UnityEngine;
 [RequireComponent(typeof(MeshRenderer))]
 public class FoldableObject2D : MonoBehaviour
 {
-    [Header("Source Polygon (local space)")]
-    [SerializeField] private Vector2[] sourcePoints;
+    [Header("Source Polygon (local space)")]  // Original before fold
+    [SerializeField] private Vector2[] sourcePoints;  
 
     [Header("Optional Collider")]
     [SerializeField] private PolygonCollider2D polygonCollider2D;
