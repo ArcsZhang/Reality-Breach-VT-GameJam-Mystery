@@ -32,7 +32,7 @@ public class ColorManager : MonoBehaviour
         Color current = GetComponent<Renderer>().material.color;
         m_ColorState state = m_ColorMap[current];
 
-        switch(state)
+        switch (state)
         {
             case m_ColorState.Red:
                 Red();
@@ -59,7 +59,7 @@ public class ColorManager : MonoBehaviour
                 Miscellaneous();
                 break;
         }
-
+    }
     private void Red()
     {
 
