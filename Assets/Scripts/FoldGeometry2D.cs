@@ -58,6 +58,25 @@ public static class FoldGeometry2D
         return shifted;
     }
 
+    /// <summary>
+    /// Clips a polygon to an axis-aligned rectangle (intersection). Empty if no overlap.
+    /// Uses the same half-plane convention as <see cref="ClipToHalfPlane"/>.
+    /// </summary>
+    public static List<Vector2> ClipPolygonToAxisAlignedRect(IReadOnlyList<Vector2> polygon, Vector2 min, Vector2 max)
+    {
+        if (polygon == null || polygon.Count < 3)
+        {
+            return new List<Vector2>();
+        }
+
+        List<Vector2> current = new List<Vector2>(polygon);
+        current = ClipToHalfPlane(current, new Vector2(-1f, 0f), -min.x);
+        current = ClipToHalfPlane(current, new Vector2(1f, 0f), max.x);
+        current = ClipToHalfPlane(current, new Vector2(0f, -1f), -min.y);
+        current = ClipToHalfPlane(current, new Vector2(0f, 1f), max.y);
+        return current;
+    }
+
     public static List<Vector2> ClipToHalfPlane(IReadOnlyList<Vector2> polygon, Vector2 normal, float d)
     {
         List<Vector2> output = new List<Vector2>();
@@ -117,6 +136,7 @@ public static class FoldGeometry2D
         }
     }
 
+    // Ear Clipping triangulation algorithm
     public static bool Triangulate(IReadOnlyList<Vector2> polygon, List<int> triangles)
     {
         triangles.Clear();

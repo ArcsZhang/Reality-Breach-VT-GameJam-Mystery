@@ -88,8 +88,14 @@ public class PlayerControl : MonoBehaviour
             return;
         }
 
-        moveInputX = moveAction.ReadValue<Vector2>().x;
-        moveInputY = moveAction.ReadValue<Vector2>().y;
+        Vector2 inputVector = moveAction.ReadValue<Vector2>(); // Reads input coords
+        moveInputX = inputVector.x;
+        moveInputY = inputVector.y;
+
+        if(inputVector.magnitude > 0)
+        {
+            Debug.Log($"Movement Pressed! X: {moveInputX}, Y: {moveInputY}");
+        }
         //isGrounded = CheckGrounded();
         UpdateGravityDirection();
         //checkFell();
