@@ -9,6 +9,8 @@ public class AbilityManager : MonoBehaviour
     {
         public Transform Target;
         public Vector3 OriginalPosition;
+        public bool WasShifted;
+        public bool WasHiddenInStrip;
         public Rigidbody2D Body;
         public bool HadBody;
         public bool BodySimulated;
@@ -289,6 +291,8 @@ public class AbilityManager : MonoBehaviour
             }
 
             NonFoldableState state = CaptureNonFoldableState(candidate, worldPosition);
+            state.WasHiddenInStrip = fullyInsideStrip;
+            state.WasShifted = fullyOnShiftedSide;
             nonFoldableStates[candidate] = state;
 
             if (fullyInsideStrip)
@@ -316,6 +320,8 @@ public class AbilityManager : MonoBehaviour
             return;
         }
 
+        Vector2 unshiftDelta = activeFold.Normal * activeFold.Gap;
+
         foreach (KeyValuePair<Transform, NonFoldableState> entry in nonFoldableStates)
         {
             NonFoldableState state = entry.Value;
@@ -325,20 +331,38 @@ public class AbilityManager : MonoBehaviour
                 continue;
             }
 
-            if (state.HadBody && state.Body != null)
+            if (state.WasShifted)
             {
-                state.Body.position = new Vector2(state.OriginalPosition.x, state.OriginalPosition.y);
-                state.Body.linearVelocity = state.BodyVelocity;
-                state.Body.angularVelocity = state.BodyAngularVelocity;
-                state.Body.simulated = state.BodySimulated;
+                if (state.HadBody && state.Body != null)
+                {
+                    state.Body.position += unshiftDelta;
+                }
+                else
+                {
+                    target.position += new Vector3(unshiftDelta.x, unshiftDelta.y, 0f);
+                }
             }
             else
             {
-                target.position = state.OriginalPosition;
+                if (state.HadBody && state.Body != null)
+                {
+                    state.Body.position = new Vector2(state.OriginalPosition.x, state.OriginalPosition.y);
+                }
+                else
+                {
+                    target.position = state.OriginalPosition;
+                }
             }
 
             RestoreEnabledFlags(state.Renderers, state.RendererEnabled);
             RestoreEnabledFlags(state.Colliders, state.ColliderEnabled);
+
+            if (state.HadBody && state.Body != null)
+            {
+                state.Body.linearVelocity = state.BodyVelocity;
+                state.Body.angularVelocity = state.BodyAngularVelocity;
+                state.Body.simulated = state.BodySimulated;
+            }
         }
 
         nonFoldableStates.Clear();
