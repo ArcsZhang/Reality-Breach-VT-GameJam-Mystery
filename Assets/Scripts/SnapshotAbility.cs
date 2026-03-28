@@ -11,6 +11,7 @@ public class SnapshotAbility : Ability
     {
         public GameObject Original;
         public Vector2 OffsetFromCenter;
+        public bool SourceIsTrigger;
 
         /// <summary> Polygon of the overlapping region in world space (from collider path clipped to the rect), or null if none / not a polygon collider. </summary>
         public List<Vector2> ClippedPolygonWorld;
@@ -436,33 +437,60 @@ public class SnapshotAbility : Ability
             }
 
             Vector2 objectPos = snapshottables[i].transform.position;
-            var entry = new SnapshotCapturedEntry
-            {
-                Original = snapshottables[i].gameObject,
-                OffsetFromCenter = objectPos - center,
-                ClippedPolygonWorld = null
-            };
+            bool capturedAnyPiece = false;
 
             PolygonCollider2D poly = snapshottables[i].GetComponent<PolygonCollider2D>();
+            Collider2D sourceCollider = snapshottables[i].GetComponent<Collider2D>();
+            bool sourceIsTrigger = (poly != null && poly.isTrigger) || (sourceCollider != null && sourceCollider.isTrigger);
+
             if (poly != null && poly.pathCount > 0)
             {
-                Vector2[] path = poly.GetPath(0);
-                var world = new List<Vector2>(path.Length);
-                for (int p = 0; p < path.Length; p++)
+                for (int pathIndex = 0; pathIndex < poly.pathCount; pathIndex++)
                 {
-                    world.Add(poly.transform.TransformPoint(path[p]));
-                }
+                    Vector2[] path = poly.GetPath(pathIndex);
+                    var world = new List<Vector2>(path.Length);
+                    for (int p = 0; p < path.Length; p++)
+                    {
+                        world.Add(poly.transform.TransformPoint(path[p]));
+                    }
 
-                List<Vector2> clipped = FoldGeometry2D.ClipPolygonToAxisAlignedRect(world, rect.Min, rect.Max);
-                if (clipped != null && clipped.Count >= 3)
-                {
-                    entry.ClippedPolygonWorld = clipped;
-                    entry.ClippedCentroidWorld = ComputePolygonCentroid(clipped);
+                    List<Vector2> clipped = FoldGeometry2D.ClipPolygonToAxisAlignedRect(world, rect.Min, rect.Max);
+                    if (clipped == null || clipped.Count < 3)
+                    {
+                        continue;
+                    }
+
+                    var entry = new SnapshotCapturedEntry
+                    {
+                        Original = snapshottables[i].gameObject,
+                        OffsetFromCenter = objectPos - center,
+                        SourceIsTrigger = sourceIsTrigger,
+                        ClippedPolygonWorld = clipped,
+                        ClippedCentroidWorld = ComputePolygonCentroid(clipped)
+                    };
+
+                    captured.Add(entry);
+                    capturedAnyPiece = true;
                 }
             }
+            else
+            {
+                var entry = new SnapshotCapturedEntry
+                {
+                    Original = snapshottables[i].gameObject,
+                    OffsetFromCenter = objectPos - center,
+                    SourceIsTrigger = sourceIsTrigger,
+                    ClippedPolygonWorld = null
+                };
 
-            snapshottables[i].Freeze();
-            captured.Add(entry);
+                captured.Add(entry);
+                capturedAnyPiece = true;
+            }
+
+            if (capturedAnyPiece)
+            {
+                snapshottables[i].Freeze();
+            }
         }
 
         currentSnapshot = captured.ToArray();
@@ -603,6 +631,7 @@ public class SnapshotAbility : Ability
 
         PolygonCollider2D poly = go.AddComponent<PolygonCollider2D>();
         poly.SetPath(0, localPath);
+        poly.isTrigger = entry.SourceIsTrigger;
 
         Mesh mesh = BuildConvexPolygonMesh2D(localPath);
         var meshFilter = go.AddComponent<MeshFilter>();
