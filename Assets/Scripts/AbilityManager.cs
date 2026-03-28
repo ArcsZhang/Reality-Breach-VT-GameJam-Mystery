@@ -18,27 +18,31 @@ public class AbilityManager : MonoBehaviour
     // Check ability every frame
     private void Update()
     {
-        //if (Keyboard.current.anyKey.wasPressedThisFrame)
-        //{
-        //    Debug.Log("Key detected");
-        //}
-
-        if (Keyboard.current.aKey.wasPressedThisFrame)
+        if (Keyboard.current.digit1Key.wasPressedThisFrame)
         {
 
             switchTo((int)AbilityType.Fold);
             Debug.Log("Switched to Fold");
         }
-        else if (Keyboard.current.bKey.wasPressedThisFrame)
+        else if (Keyboard.current.digit2Key.wasPressedThisFrame)
         {
-            switchTo((int)AbilityType.Snapshot);
-            Debug.Log("Switched to Snapshot");
+            if (activeIndex == (int)AbilityType.Snapshot &&
+                abilities.Length > (int)AbilityType.Snapshot &&
+                abilities[(int)AbilityType.Snapshot] is SnapshotAbility snapshotAbility &&
+                snapshotAbility.TryPasteSnapshotAtCursor())
+            {
+                // Snapshot already active: paste held capture at cursor (does not re-run ability switch).
+            }
+            else
+            {
+                switchTo((int)AbilityType.Snapshot);
+                Debug.Log("Switched to Snapshot");
+            }
         }
 
 
         if (!abilityInputEnabled) return;
         if (abilities == null || abilities.Length == 0) return;
-
         if (abilityInputEnabled)
             active.onUpdate();
     }

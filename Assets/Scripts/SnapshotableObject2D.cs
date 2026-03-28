@@ -11,7 +11,7 @@ public class SnapshotableObject : MonoBehaviour
     {
         meshRenderer = GetComponent<MeshRenderer>();
         body = GetComponent<Rigidbody2D>();
-        CreateOutline();
+        //CreateOutline();
     }
 
     private void CreateOutline()
@@ -37,8 +37,8 @@ public class SnapshotableObject : MonoBehaviour
 
     public void SetHighlighted(bool highlighted)
     {
-        if (outlineObject != null)
-            outlineObject.SetActive(highlighted);
+        // if (outlineObject != null)
+        //     outlineObject.SetActive(highlighted);
     }
 
     public void Freeze()
