@@ -17,6 +17,11 @@ public class ObjectBehavior : ColorManager
     private InputAction moveAction;
     private Rigidbody2D rigidBody2D;
     private Vector2 moveInput;
+	
+	public int isGrounded = 0;
+	public bool IsGrounded(){
+		return isGrounded > 0;
+	}
 
     protected override void Awake()
     {
@@ -151,4 +156,14 @@ public class ObjectBehavior : ColorManager
         Vector2 newVelocity = Vector2.MoveTowards(currentVelocity, targetVelocity, groundRate);
         rigidBody2D.linearVelocity = Vector2.ClampMagnitude(newVelocity, moveSpeed);
     }
+
+	private void OnTriggerEnter2D(Collider2D collision)
+	{
+		if (collision.gameObject.layer == 6) isGrounded += 1;
+	}
+
+	private void OnTriggerExit2D(Collider2D collision)
+	{
+		if (collision.gameObject.layer == 6) isGrounded -= 1;
+	}
 }

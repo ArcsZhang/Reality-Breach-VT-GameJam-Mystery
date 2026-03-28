@@ -16,6 +16,11 @@ public class EnemyBehavior : ColorManager
 	private Rigidbody2D rigidBody2D;
 	private Vector2 moveInput;
 
+	public int isGrounded = 1;
+	public bool IsGrounded(){
+		return isGrounded > 0;
+	}
+
 	protected override void Awake()
 	{
 		base.Awake();
@@ -148,5 +153,15 @@ public class EnemyBehavior : ColorManager
 		float groundRate = moveInput.sqrMagnitude > 0.0001f ? stepAcceleration : stepDeceleration;
 		Vector2 newVelocity = Vector2.MoveTowards(currentVelocity, targetVelocity, groundRate);
 		rigidBody2D.linearVelocity = Vector2.ClampMagnitude(newVelocity, moveSpeed);
+	}
+
+	private void OnTriggerEnter2D(Collider2D collision)
+	{
+		if (collision.gameObject.layer == 6) isGrounded += 1;
+	}
+
+	private void OnTriggerExit2D(Collider2D collision)
+	{
+		if (collision.gameObject.layer == 6) isGrounded -= 1;
 	}
 }
