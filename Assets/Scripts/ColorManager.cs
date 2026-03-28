@@ -261,7 +261,7 @@ public class ColorManager : MonoBehaviour
             case ColorState.Green:
                 return Color.green;
             case ColorState.Blue:
-                return Color.blue;
+                return new Color(0f, 0.5f, 1f);
             case ColorState.Purple:
                 return new Color(0.5f, 0f, 1f);
             case ColorState.White:
