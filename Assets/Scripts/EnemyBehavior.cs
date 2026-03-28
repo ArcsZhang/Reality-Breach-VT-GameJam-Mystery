@@ -5,6 +5,13 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(PlayerInput))]
 public class EnemyBehavior : ColorManager
 {
+	[Tooltip("Any layer that should obstruct line of site.")]
+	public LayerMask obstacleLayer;
+	
+	[Header("Red Movement")]
+	[SerializeField] private float redAcceleration = 80f;
+	[SerializeField] private float redAttackRange = 0.01f;
+	
 	[Header("Green Movement")]
 	[SerializeField] private float moveSpeed = 6f;
 	[SerializeField] private float acceleration = 80f;
@@ -14,13 +21,20 @@ public class EnemyBehavior : ColorManager
 	private PlayerInput playerInput;
 	private InputAction moveAction;
 	private Rigidbody2D rigidBody2D;
+	private Transform player;
 	private Vector2 moveInput;
 
 	protected override void Awake()
 	{
 		base.Awake();
 
-		playerInput = GetComponent<PlayerInput>();
+        GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
+        if (playerObject != null)
+            player = playerObject.transform;
+        else
+            Debug.LogWarning($"[EnemyController] No GameObject tagged 'Player' found in the scene.");
+
+        playerInput = GetComponent<PlayerInput>();
 		rigidBody2D = GetComponent<Rigidbody2D>();
 		playerInput.defaultActionMap = "Player";
 		moveAction = playerInput.actions[moveActionName];
@@ -43,9 +57,9 @@ public class EnemyBehavior : ColorManager
 
 	protected override void OnRedChanged(ColorState previous)
 	{
-	}
+    }
 
-	protected override void OnOrangeChanged(ColorState previous)
+    protected override void OnOrangeChanged(ColorState previous)
 	{
 	}
 
@@ -79,9 +93,22 @@ public class EnemyBehavior : ColorManager
 
 	protected override void OnRedUpdate()
 	{
-	}
+        if (player == null)
+            return;
+        if (!IsVisible())
+            return;
+        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
 
-	protected override void OnOrangeUpdate()
+		if (distanceToPlayer < redAttackRange)
+		{
+			// kill player
+		}
+		else
+			MoveTowardPlayer();
+
+    }
+
+    protected override void OnOrangeUpdate()
 	{
 	}
 
@@ -149,4 +176,19 @@ public class EnemyBehavior : ColorManager
 		Vector2 newVelocity = Vector2.MoveTowards(currentVelocity, targetVelocity, groundRate);
 		rigidBody2D.linearVelocity = Vector2.ClampMagnitude(newVelocity, moveSpeed);
 	}
+
+    private void MoveTowardPlayer()
+    {
+        Vector2 direction = ((Vector2)player.position - (Vector2)transform.position).normalized;
+		rigidBody2D.AddForce(direction * redAcceleration);
+    }
+    private bool IsVisible()
+    {
+        Vector2 origin = transform.position;
+        Vector2 target = player.position;
+
+        RaycastHit2D hit = Physics2D.Linecast(origin, target, obstacleLayer);
+        return hit.collider == null;
+    }
+
 }
