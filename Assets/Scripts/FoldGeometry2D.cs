@@ -117,6 +117,7 @@ public static class FoldGeometry2D
         }
     }
 
+    // Ear Clipping triangulation algorithm
     public static bool Triangulate(IReadOnlyList<Vector2> polygon, List<int> triangles)
     {
         triangles.Clear();

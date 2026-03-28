@@ -18,7 +18,7 @@ public class ColorManager : MonoBehaviour
         { Color.gray, m_ColorState.Gray },
         { Color.black, m_ColorState.Black }
 
-    }
+    };
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
