@@ -7,6 +7,8 @@ public class EnemyBehavior : ColorManager
 {
 	[Header("Green Movement")]
 	[SerializeField] private float moveSpeed = 6f;
+	[SerializeField] private float acceleration = 80f;
+	[SerializeField] private float deceleration = 100f;
 	[SerializeField] private string moveActionName = "Move";
 
 	private PlayerInput playerInput;
@@ -116,6 +118,35 @@ public class EnemyBehavior : ColorManager
 			return;
 		}
 
-		rigidBody2D.linearVelocity += moveInput * moveSpeed * Time.fixedDeltaTime;
+		Vector2 currentVelocity = rigidBody2D.linearVelocity;
+		Vector2 gravityVector = Physics2D.gravity * rigidBody2D.gravityScale;
+		float stepAcceleration = acceleration * Time.fixedDeltaTime;
+		float stepDeceleration = deceleration * Time.fixedDeltaTime;
+
+		if (gravityVector.sqrMagnitude > 0.0001f)
+		{
+			Vector2 gravityDirection = gravityVector.normalized;
+			float speedAlongGravity = Vector2.Dot(currentVelocity, gravityDirection);
+			Vector2 gravityVelocity = gravityDirection * speedAlongGravity;
+
+			Vector2 lateralCurrentVelocity = currentVelocity - gravityVelocity;
+			Vector2 lateralInput = moveInput - gravityDirection * Vector2.Dot(moveInput, gravityDirection);
+			Vector2 lateralTargetVelocity = lateralInput * moveSpeed;
+
+			float rate = lateralInput.sqrMagnitude > 0.0001f ? stepAcceleration : stepDeceleration;
+			Vector2 lateralNewVelocity = Vector2.MoveTowards(lateralCurrentVelocity, lateralTargetVelocity, rate);
+			if (lateralNewVelocity.sqrMagnitude > moveSpeed * moveSpeed)
+			{
+				lateralNewVelocity = lateralNewVelocity.normalized * moveSpeed;
+			}
+
+			rigidBody2D.linearVelocity = gravityVelocity + lateralNewVelocity;
+			return;
+		}
+
+		Vector2 targetVelocity = moveInput * moveSpeed;
+		float groundRate = moveInput.sqrMagnitude > 0.0001f ? stepAcceleration : stepDeceleration;
+		Vector2 newVelocity = Vector2.MoveTowards(currentVelocity, targetVelocity, groundRate);
+		rigidBody2D.linearVelocity = Vector2.ClampMagnitude(newVelocity, moveSpeed);
 	}
 }
