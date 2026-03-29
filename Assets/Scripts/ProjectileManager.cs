@@ -47,6 +47,13 @@ public class ProjectileManager : MonoBehaviour
             enemyBehavior.Die();
         }
 
+		TerrainBehavior terrainBehavior = collision.gameObject.GetComponent<TerrainBehavior>();
+		if (terrainBehavior != null && terrainBehavior.GetColor() == ColorManager.ColorState.Green)
+		{
+			terrainBehavior.Destroy();
+		}
+
+
         Destroy(gameObject);
     }
 }

@@ -7,6 +7,11 @@ public class ObjectBehavior : ColorManager
 {
 	[Header("Player Object")]
 	[SerializeField] public bool isPlayer = false;
+    [Header("Yellow Attack")]
+    [SerializeField] private GameObject projectileObject;
+    [SerializeField] private float fireRate = 0.5f;
+    [SerializeField] private float projectileSpawnDistance = 1f;
+
     [Header("Green Movement")]
     [SerializeField] private float moveSpeed = 6f;
     [SerializeField] private float acceleration = 80f;
@@ -19,6 +24,9 @@ public class ObjectBehavior : ColorManager
 	private Renderer objectRenderer;
 	private Collider2D objectCollider;
 	private AudioSource audioSource;
+    private float fireTimer;
+    private float defaultGravityScale;
+    private RigidbodyConstraints2D defaultConstraints;
     private Vector2 moveInput;
 	public bool hasDied;
 	
@@ -36,6 +44,8 @@ public class ObjectBehavior : ColorManager
 		audioSource = GetComponent<AudioSource>();
 		objectRenderer = GetComponent<Renderer>();
 		objectCollider = GetComponent<Collider2D>();
+        defaultGravityScale = rigidBody2D != null ? rigidBody2D.gravityScale : 1f;
+        defaultConstraints = rigidBody2D != null ? rigidBody2D.constraints : RigidbodyConstraints2D.None;
 		playerInput.defaultActionMap = "Player";
         moveAction = playerInput.actions[moveActionName];
 
@@ -65,6 +75,14 @@ public class ObjectBehavior : ColorManager
 
     protected override void OnYellowChanged(ColorState previous)
     {
+        if (rigidBody2D != null)
+        {
+            rigidBody2D.gravityScale = 0f;
+            rigidBody2D.constraints = defaultConstraints | RigidbodyConstraints2D.FreezeRotation;
+        }
+
+        moveInput = Vector2.zero;
+        fireTimer = 0f;
     }
 
     protected override void OnGreenChanged(ColorState previous)
@@ -89,6 +107,12 @@ public class ObjectBehavior : ColorManager
         {
             moveInput = Vector2.zero;
         }
+
+		if (previousColor == ColorState.Yellow && newColor != ColorState.Yellow && rigidBody2D != null)
+		{
+			rigidBody2D.gravityScale = defaultGravityScale;
+			rigidBody2D.constraints = defaultConstraints;
+		}
     }
 
     protected override void OnRedUpdate()
@@ -101,6 +125,19 @@ public class ObjectBehavior : ColorManager
 
     protected override void OnYellowUpdate()
     {
+        if (projectileObject == null)
+        {
+            return;
+        }
+
+        fireTimer -= Time.deltaTime;
+        if (fireTimer > 0f)
+        {
+            return;
+        }
+
+        FireProjectile();
+        fireTimer = fireRate;
     }
 
     protected override void OnGreenUpdate()
@@ -185,12 +222,14 @@ public class ObjectBehavior : ColorManager
 			{
 				cameraTransform.SetParent(null);
 			}
+			objectRenderer.enabled = false;
+			objectCollider.enabled = false;
+			this.enabled = false;
 		}
-		objectRenderer.enabled = false;
-		objectCollider.enabled = false;
-		this.enabled = false;
-
-		// gameObject.SetActive(false);
+		else 
+		{
+			gameObject.SetActive(false);
+		}
 	}
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -213,4 +252,11 @@ public class ObjectBehavior : ColorManager
 		if (collision.gameObject.layer == 6) isGrounded -= 1;
 		if (!IsGrounded() && Physics2D.gravity == Vector2.zero) Die();
 	}
+
+    private void FireProjectile()
+    {
+        Vector2 direction = transform.right.normalized;
+        Vector2 spawnPoint = (Vector2)transform.position + direction * projectileSpawnDistance;
+        Instantiate(projectileObject, spawnPoint, transform.rotation);
+    }
 }
