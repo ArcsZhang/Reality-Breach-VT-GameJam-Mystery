@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static Unity.VisualScripting.Member;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(PlayerInput))]
@@ -21,6 +22,10 @@ public class EnemyBehavior : ColorManager
 	[SerializeField] private float acceleration = 80f;
 	[SerializeField] private float deceleration = 100f;
 	[SerializeField] private string moveActionName = "Move";
+
+	[Header("Blue Movement")]
+	[SerializeField] private float blueAcceleration = 15f;
+	[SerializeField] private float blueDetectionRange = 3f;
 
 	private PlayerInput playerInput;
 	private InputAction moveAction;
@@ -167,7 +172,6 @@ public class EnemyBehavior : ColorManager
             return;
         if (!IsVisible())
             return;
-        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
 
 		MoveTowardPlayer(redAcceleration);
     }
@@ -210,7 +214,20 @@ public class EnemyBehavior : ColorManager
 
 	protected override void OnBlueUpdate()
 	{
-	}
+        if (player == null || player.GetComponent<ObjectBehavior>() == null || player.GetComponent<ObjectBehavior>().hasDied)
+            return;
+		if (!IsVisible()) return;
+
+        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
+		bool inRange = blueDetectionRange <= 0f || distanceToPlayer < blueDetectionRange;
+
+		if (!inRange)
+			return;
+		else
+			MoveTowardPlayer(-blueAcceleration);
+
+
+    }
 
 	protected override void OnPurpleUpdate()
 	{
@@ -296,7 +313,7 @@ public class EnemyBehavior : ColorManager
 			return;
 		}
 
-		ColorCollisionResolver.ResolveEnemyTouch(this, col.gameObject);
+        ColorCollisionResolver.ResolveEnemyTouch(this, col.gameObject);
     }
 
     private void MoveTowardPlayer(float acceleration)
