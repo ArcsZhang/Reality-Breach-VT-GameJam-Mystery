@@ -479,6 +479,7 @@ MonoBehaviour:
   - {fileID: 255675904}
   activeIndex: 1
   abilityInputEnabled: 1
+  worldCamera: {fileID: 0}
 --- !u!114 &255675904
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1023,7 +1024,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ea855b141c28624bbcdd1716cd9f5bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyBehavior
-  originalColor: 0
+  originalColor: 2
   applyVisualColorToRenderer: 1
   visualColorMode: 0
   targetSpriteRenderer: {fileID: 0}
@@ -1031,12 +1032,18 @@ MonoBehaviour:
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 64
+  yellowLayer:
+    serializedVersion: 2
+    m_Bits: 0
   redAcceleration: 1
   redAttackRange: 3
+  projectileObject: {fileID: 8840789182456116912, guid: d5e35a929b025cb418b004371ef1aaf5, type: 3}
+  fireRate: 1
   moveSpeed: 6
   acceleration: 80
   deceleration: 100
   moveActionName: Move
+  isGrounded: 1
 --- !u!1 &1693720831
 GameObject:
   m_ObjectHideFlags: 0
@@ -1386,12 +1393,18 @@ MonoBehaviour:
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 0
+  yellowLayer:
+    serializedVersion: 2
+    m_Bits: 0
   redAcceleration: 80
   redAttackRange: 3
+  projectileObject: {fileID: 0}
+  fireRate: 1
   moveSpeed: 6
   acceleration: 80
   deceleration: 100
   moveActionName: Move
+  isGrounded: 1
 --- !u!114 &1775934880
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1473,7 +1486,7 @@ CircleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
@@ -1602,6 +1615,7 @@ MonoBehaviour:
   acceleration: 80
   deceleration: 100
   moveActionName: Move
+  isGrounded: 0
 --- !u!114 &1869815254
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1642,7 +1656,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2892627202288124267, guid: 1bc9b933f4001c340940dec825dd4392, type: 3}
       propertyPath: originalColor
-      value: 0
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3658223626637572437, guid: 1bc9b933f4001c340940dec825dd4392, type: 3}
       propertyPath: m_Name
@@ -1690,7 +1704,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8403879301815296722, guid: 1bc9b933f4001c340940dec825dd4392, type: 3}
       propertyPath: m_IsTrigger
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
