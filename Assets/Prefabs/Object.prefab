@@ -218,7 +218,7 @@ MonoBehaviour:
   targetSpriteRenderer: {fileID: 0}
   targetMeshRenderer: {fileID: 0}
   isPlayer: 0
-  projectileObject: {fileID: 0}
+  projectileObject: {fileID: 8840789182456116912, guid: d5e35a929b025cb418b004371ef1aaf5, type: 3}
   fireRate: 0.5
   projectileSpawnDistance: 1
   moveSpeed: 6

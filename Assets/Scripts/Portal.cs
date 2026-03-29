@@ -163,6 +163,7 @@ public class Portal : MonoBehaviour
         }
 
         isLoadingLevel = true;
+        objectBehavior.SetPortalTransitionActive(true);
         StartCoroutine(SuckPlayerAndProceed(objectBehavior));
     }
 
@@ -218,6 +219,7 @@ public class Portal : MonoBehaviour
             }
 
             playerTransform.localScale = initialScale;
+            player.SetPortalTransitionActive(false);
             isLoadingLevel = false;
         }
     }

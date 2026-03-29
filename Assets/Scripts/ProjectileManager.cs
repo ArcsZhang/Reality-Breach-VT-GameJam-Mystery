@@ -52,6 +52,10 @@ public class ProjectileManager : MonoBehaviour
 		{
 			terrainBehavior.Destroy();
 		}
+		if (terrainBehavior != null && terrainBehavior.GetColor() == ColorManager.ColorState.Blue)
+		{
+			terrainBehavior.Destroy();
+		}
 
 
         Destroy(gameObject);

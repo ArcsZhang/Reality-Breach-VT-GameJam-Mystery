@@ -28,12 +28,18 @@ public class ObjectBehavior : ColorManager
     private float defaultGravityScale;
     private RigidbodyConstraints2D defaultConstraints;
     private Vector2 moveInput;
+	private bool isInPortalTransition;
 	public bool hasDied;
 	
 	public int isGrounded = 0;
 	public bool IsGrounded(){
 		return isGrounded > 0;
 	}
+
+    public void SetPortalTransitionActive(bool active)
+    {
+        isInPortalTransition = active;
+    }
 
     protected override void Awake()
     {
@@ -250,7 +256,7 @@ public class ObjectBehavior : ColorManager
 	private void OnTriggerExit2D(Collider2D collision)
 	{
 		if (collision.gameObject.layer == 6) isGrounded -= 1;
-		if (!IsGrounded() && Physics2D.gravity == Vector2.zero) Die();
+        if (!isInPortalTransition && !IsGrounded() && Physics2D.gravity == Vector2.zero) Die();
 	}
 
     private void FireProjectile()
