@@ -7,9 +7,17 @@ public class EnemyBehavior : ColorManager
 {
 	[Tooltip("Any layer that should obstruct line of site.")]
 	public LayerMask obstacleLayer;
+
+	[Tooltip("Special layer for yellow walls.")]
+	public LayerMask yellowLayer;
 	
 	[Header("Red Movement")]
 	[SerializeField] private float redAcceleration = 15f;
+	[SerializeField] private float redAttackRange = 0.01f;
+
+	[Header("Yellow Attack")]
+	[SerializeField] private GameObject projectileObject;
+	[SerializeField] private float fireRate = 0.5f;
 	
 	[Header("Green Movement")]
 	[SerializeField] private float moveSpeed = 6f;
@@ -20,9 +28,11 @@ public class EnemyBehavior : ColorManager
 	private PlayerInput playerInput;
 	private InputAction moveAction;
 	private Rigidbody2D rigidBody2D;
+	private SpriteRenderer spriteRenderer;
 	private Transform player;
 	private Portal portal;
 	private Vector2 moveInput;
+	private float fireTimer;
 	public bool hasDied;
 
 	public int isGrounded = 0;
@@ -105,6 +115,8 @@ public class EnemyBehavior : ColorManager
 
 	protected override void OnYellowChanged(ColorState previous)
 	{
+		obstacleLayer |= (1 << yellowLayer);
+		rigidBody2D.gravityScale = 0f;
 	}
 
 	protected override void OnGreenChanged(ColorState previous)
@@ -129,6 +141,11 @@ public class EnemyBehavior : ColorManager
 		{
 			moveInput = Vector2.zero;
 		}
+
+		if (previousColor == ColorState.Yellow && newColor != ColorState.Yellow)
+		{
+			obstacleLayer &= ~(1 << yellowLayer);
+		}
 	}
 
 	protected override void OnRedUpdate()
@@ -139,8 +156,7 @@ public class EnemyBehavior : ColorManager
             return;
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);
 
-		MoveTowardPlayer();
-
+		MoveTowardPlayer(redAcceleration);
     }
 
     protected override void OnOrangeUpdate()
@@ -149,6 +165,19 @@ public class EnemyBehavior : ColorManager
 
 	protected override void OnYellowUpdate()
 	{
+		if (player == null)
+			return;
+		if (!IsVisible())
+			return;
+		
+		RotateTowardPlayer();
+
+		fireTimer -= Time.deltaTime;
+		if (fireTimer <= 0f)
+		{
+			FireProjectile();
+			fireTimer = fireRate;
+		}
 	}
 
 	protected override void OnGreenUpdate()
@@ -252,7 +281,7 @@ public class EnemyBehavior : ColorManager
 		ColorCollisionResolver.ResolveEnemyTouch(this, col.gameObject);
     }
 
-    private void MoveTowardPlayer()
+    private void MoveTowardPlayer(float acceleration)
     {
 		if (player == null)
 		{
@@ -269,16 +298,35 @@ public class EnemyBehavior : ColorManager
 			return;
 		}
         Vector2 direction = ((Vector2)player.position - (Vector2)transform.position).normalized;
-		rigidBody2D.AddForce(direction * redAcceleration);
+		rigidBody2D.AddForce(direction * acceleration);
     }
+
+	private void RotateTowardPlayer()
+	{
+		Vector2 direction = ((Vector2)player.position - (Vector2)transform.position).normalized;
+		float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+		transform.rotation = Quaternion.Euler(0f, 0f, angle);
+	}
+
     private bool IsVisible()
     {
         Vector2 origin = transform.position;
         Vector2 target = player.position;
-
+			
         RaycastHit2D hit = Physics2D.Linecast(origin, target, obstacleLayer);
         return hit.collider == null;
     }
+
+	private void FireProjectile()
+	{
+		if (projectileObject == null)
+			return;
+
+		Vector2 direction = ((Vector2)player.position - (Vector2)transform.position).normalized;
+		Vector2 spawnPoint = (Vector2)transform.position + direction * 1.0f;
+		
+		GameObject projectile = Instantiate(projectileObject, spawnPoint, transform.rotation);
+	}
 
 	private void OnTriggerEnter2D(Collider2D collision)
 	{
