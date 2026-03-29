@@ -18,7 +18,12 @@ public class GravityAbility : Ability
 	[SerializeField] private Color neutralColor = new Color(0.9f, 0.9f, 0.9f, 0.9f);
 	[SerializeField] private Color deadzoneRingColor = new Color(1f, 0.95f, 0.2f, 0.7f);
 
-	private LineRenderer directionLine;
+    [SerializeField] private float cooldownDuration = 3f; // different per ability
+    private float cooldownTimer = 0f;
+    public bool IsOnCooldown => cooldownTimer > 0f;
+    public float GetCooldownProgress() => Mathf.Clamp01(cooldownTimer / cooldownDuration);
+
+    private LineRenderer directionLine;
 	private LineRenderer deadzoneRing;
 
 	private void Awake()
@@ -41,10 +46,19 @@ public class GravityAbility : Ability
 			WorldCamera = Camera.main;
 		}
 	}
+    private void TriggerCooldown()
+    {
+        cooldownTimer = cooldownDuration;
+    }
 
-	public override void onUpdate()
+    public override void onUpdate()
 	{
-		if (WorldCamera == null)
+        if (cooldownTimer > 0f)
+        {
+            cooldownTimer -= Time.deltaTime;
+        }
+
+        if (WorldCamera == null)
 		{
 			WorldCamera = Camera.main;
 		}
@@ -70,6 +84,7 @@ public class GravityAbility : Ability
 
 		if (mouse.leftButton.wasPressedThisFrame)
 		{
+			TriggerCooldown();
 			Debug.Log($"Gravity direction set to {direction} (neutral: {isNeutral})");
 			if (isNeutral)
 			{
