@@ -7,13 +7,9 @@ public class EnemyBehavior : ColorManager
 {
 	[Tooltip("Any layer that should obstruct line of site.")]
 	public LayerMask obstacleLayer;
-
-	[Tooltip("Special layer for yellow walls.")]
-	public LayerMask yellowLayer;
 	
 	[Header("Red Movement")]
 	[SerializeField] private float redAcceleration = 15f;
-	[SerializeField] private float redAttackRange = 0.01f;
 
 	[Header("Yellow Attack")]
 	[SerializeField] private GameObject projectileObject;
@@ -31,9 +27,11 @@ public class EnemyBehavior : ColorManager
 	private Rigidbody2D rigidBody2D;
 	private SpriteRenderer spriteRenderer;
 	private Transform player;
+	private Renderer playerRenderer;
 	private Portal portal;
 	private Vector2 moveInput;
 	private float fireTimer;
+	private float defaultGravityScale;
 	public bool hasDied;
 
 	public int isGrounded = 0;
@@ -47,6 +45,7 @@ public class EnemyBehavior : ColorManager
 
         playerInput = GetComponent<PlayerInput>();
 		rigidBody2D = GetComponent<Rigidbody2D>();
+		defaultGravityScale = rigidBody2D != null ? rigidBody2D.gravityScale : 1f;
 		playerInput.defaultActionMap = "Player";
 		moveAction = playerInput.actions[moveActionName];
 
@@ -94,6 +93,10 @@ public class EnemyBehavior : ColorManager
 		{
 			Debug.LogWarning("[EnemyBehavior] No player with ObjectBehavior.isPlayer was found.", this);
 		}
+		if (player != null)
+		{
+			playerRenderer = player.GetComponent<Renderer>();
+		}
 	}
 
 	private void OnEnable()
@@ -112,6 +115,12 @@ public class EnemyBehavior : ColorManager
 
     protected override void OnOrangeChanged(ColorState previous)
 	{
+		if (rigidBody2D != null)
+		{
+			rigidBody2D.gravityScale = defaultGravityScale;
+		}
+
+		moveInput = Vector2.zero;
 	}
 
 	protected override void OnYellowChanged(ColorState previous)
@@ -145,6 +154,10 @@ public class EnemyBehavior : ColorManager
 
 		if (previousColor == ColorState.Yellow && newColor != ColorState.Yellow)
 		{
+			if (rigidBody2D != null)
+			{
+				rigidBody2D.gravityScale = defaultGravityScale;
+			}
 		}
 	}
 
@@ -165,10 +178,15 @@ public class EnemyBehavior : ColorManager
 
 	protected override void OnYellowUpdate()
 	{
-		if (player == null)
-			return;
+		if (player == null || player.GetComponent<ObjectBehavior>() == null || player.GetComponent<ObjectBehavior>().hasDied)
+            return;
 		if (!IsVisible())
 			return;
+
+		if (playerRenderer == null || playerRenderer.enabled == false)
+		{
+			return;
+		}
 		
 		RotateTowardPlayer();
 
@@ -292,7 +310,6 @@ public class EnemyBehavior : ColorManager
 		{
 			return;
 		}
-		Renderer playerRenderer = player.GetComponent<Renderer>();
 		if (playerRenderer == null || playerRenderer.enabled == false)
 		{
 			return;
@@ -325,7 +342,6 @@ public class EnemyBehavior : ColorManager
 		Vector2 direction = ((Vector2)player.position - (Vector2)transform.position).normalized;
 		Vector2 spawnPoint = (Vector2)transform.position + direction * projectileSpawnDistance;
 
-		projectileObject.GetComponent<ProjectileManager>().source = this;
 		GameObject projectile = Instantiate(projectileObject, spawnPoint, transform.rotation);
 	}
 

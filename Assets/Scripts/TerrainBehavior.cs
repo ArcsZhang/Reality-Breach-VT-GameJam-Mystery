@@ -22,6 +22,8 @@ public class TerrainBehavior : ColorManager
 
     protected override void OnYellowChanged(ColorState previous)
     {
+		// change its layer to FalseWall
+		gameObject.layer = LayerMask.NameToLayer("FalseWall");
     }
 
     protected override void OnGreenChanged(ColorState previous)
@@ -39,6 +41,15 @@ public class TerrainBehavior : ColorManager
     protected override void OnWhiteChanged(ColorState previous)
     {
     }
+
+	protected override void OnColorChanged(ColorState previousColor, ColorState newColor)
+	{
+		if (previousColor == ColorState.Yellow && newColor != ColorState.Yellow)
+		{
+			// change its layer back to Default
+			gameObject.layer = LayerMask.NameToLayer("Wall");
+		}
+	}
 
     protected override void OnRedUpdate()
     {
@@ -77,4 +88,14 @@ public class TerrainBehavior : ColorManager
 		hasDestroyed = true;
 		gameObject.SetActive(false);
 	}
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision == null)
+        {
+            return;
+        }
+
+        ColorCollisionResolver.ResolveTerrainTouch(this, collision.gameObject);
+    }
 }
