@@ -18,6 +18,7 @@ public class EnemyBehavior : ColorManager
 	[Header("Yellow Attack")]
 	[SerializeField] private GameObject projectileObject;
 	[SerializeField] private float fireRate = 0.5f;
+	[SerializeField] private float projectileSpawnDistance = 1f;
 	
 	[Header("Green Movement")]
 	[SerializeField] private float moveSpeed = 6f;
@@ -114,8 +115,8 @@ public class EnemyBehavior : ColorManager
 	}
 
 	protected override void OnYellowChanged(ColorState previous)
-	{
-		obstacleLayer |= (1 << yellowLayer);
+	{		
+		rigidBody2D = GetComponent<Rigidbody2D>();
 		rigidBody2D.gravityScale = 0f;
 	}
 
@@ -144,7 +145,6 @@ public class EnemyBehavior : ColorManager
 
 		if (previousColor == ColorState.Yellow && newColor != ColorState.Yellow)
 		{
-			obstacleLayer &= ~(1 << yellowLayer);
 		}
 	}
 
@@ -323,8 +323,9 @@ public class EnemyBehavior : ColorManager
 			return;
 
 		Vector2 direction = ((Vector2)player.position - (Vector2)transform.position).normalized;
-		Vector2 spawnPoint = (Vector2)transform.position + direction * 1.0f;
-		
+		Vector2 spawnPoint = (Vector2)transform.position + direction * projectileSpawnDistance;
+
+		projectileObject.GetComponent<ProjectileManager>().source = this;
 		GameObject projectile = Instantiate(projectileObject, spawnPoint, transform.rotation);
 	}
 
