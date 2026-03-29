@@ -6,7 +6,8 @@ public class Portal : MonoBehaviour
 {
     [Header("Level Progress")]
     [SerializeField] public int enemiesLeft = 0;
-    [SerializeField] private string nextLevelScene = "";
+    [SerializeField] public string nextLevelScene = "";
+	[SerializeField] private bool detectEnemiesOnStart = true;
 
     [Header("Activation Visuals")]
     [SerializeField] private float growDurationSeconds = 1f;
@@ -39,10 +40,21 @@ public class Portal : MonoBehaviour
     private void Start()
     {
 		audioSource = GetComponent<AudioSource>();
+        if (detectEnemiesOnStart)
+        {
+            RefreshEnemyCountFromScene();
+        }
+
         if (enemiesLeft <= 0)
         {
             ActivatePortal();
         }
+    }
+
+    public void RefreshEnemyCountFromScene()
+    {
+        EnemyBehavior[] enemies = FindObjectsByType<EnemyBehavior>();
+        enemiesLeft = enemies != null ? enemies.Length : 0;
     }
 
     private void Update()

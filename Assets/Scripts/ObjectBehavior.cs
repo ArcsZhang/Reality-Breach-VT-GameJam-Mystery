@@ -17,6 +17,8 @@ public class ObjectBehavior : ColorManager
     private InputAction moveAction;
     private Rigidbody2D rigidBody2D;
     private Vector2 moveInput;
+	public bool hasDied;
+	public bool isHidden;
 	
 	public int isGrounded = 0;
 	public bool IsGrounded(){
@@ -155,6 +157,38 @@ public class ObjectBehavior : ColorManager
         float groundRate = moveInput.sqrMagnitude > 0.0001f ? stepAcceleration : stepDeceleration;
         Vector2 newVelocity = Vector2.MoveTowards(currentVelocity, targetVelocity, groundRate);
         rigidBody2D.linearVelocity = Vector2.ClampMagnitude(newVelocity, moveSpeed);
+    }
+
+	public void Die()
+	{
+		if (hasDied)
+		{
+			return;
+		}
+
+		hasDied = true;
+
+		if (isPlayer)
+		{
+			// make child camera not child of player so it doesn't get disabled immediately
+			Transform cameraTransform = transform.Find("Main Camera");
+			if (cameraTransform != null)
+			{
+				cameraTransform.SetParent(null);
+			}
+		}
+
+		gameObject.SetActive(false);
+	}
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision == null)
+        {
+            return;
+        }
+
+        ColorCollisionResolver.ResolveObjectTouch(this, collision.gameObject);
     }
 
 	private void OnTriggerEnter2D(Collider2D collision)

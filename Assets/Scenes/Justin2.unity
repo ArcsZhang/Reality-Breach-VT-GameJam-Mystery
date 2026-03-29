@@ -653,6 +653,7 @@ MonoBehaviour:
   playerObject: {fileID: 1807027457}
   gravityStrength: 9.81
   centerDeadzonePixels: 80
+  startingGravity: {x: 0, y: 0}
   indicatorLengthWorld: 2.5
   indicatorWidth: 0.06
   deadzoneRingSegments: 32
@@ -833,6 +834,63 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1be5e2f9ffb54524aa4dea36627d6ff1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SnapshotableObject
+--- !u!1001 &345385779
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 3658223626637572437, guid: 1bc9b933f4001c340940dec825dd4392, type: 3}
+      propertyPath: m_Name
+      value: Enemy
+      objectReference: {fileID: 0}
+    - target: {fileID: 6414990357459468998, guid: 1bc9b933f4001c340940dec825dd4392, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -6.23
+      objectReference: {fileID: 0}
+    - target: {fileID: 6414990357459468998, guid: 1bc9b933f4001c340940dec825dd4392, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -3.81
+      objectReference: {fileID: 0}
+    - target: {fileID: 6414990357459468998, guid: 1bc9b933f4001c340940dec825dd4392, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6414990357459468998, guid: 1bc9b933f4001c340940dec825dd4392, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6414990357459468998, guid: 1bc9b933f4001c340940dec825dd4392, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6414990357459468998, guid: 1bc9b933f4001c340940dec825dd4392, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6414990357459468998, guid: 1bc9b933f4001c340940dec825dd4392, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6414990357459468998, guid: 1bc9b933f4001c340940dec825dd4392, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6414990357459468998, guid: 1bc9b933f4001c340940dec825dd4392, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6414990357459468998, guid: 1bc9b933f4001c340940dec825dd4392, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 1bc9b933f4001c340940dec825dd4392, type: 3}
 --- !u!1 &432158506
 GameObject:
   m_ObjectHideFlags: 0
@@ -1355,6 +1413,54 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1be5e2f9ffb54524aa4dea36627d6ff1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SnapshotableObject
+--- !u!1 &925928437
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 925928439}
+  - component: {fileID: 925928438}
+  m_Layer: 0
+  m_Name: LevelManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &925928438
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 925928437}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80c8c3b880d432b43af9d886cc6fb204, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  thisLevelName: 
+  nextLevelName: Justin2
+  portal: {fileID: 0}
+  player: {fileID: 0}
+--- !u!4 &925928439
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 925928437}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &976493409
 GameObject:
   m_ObjectHideFlags: 0
@@ -1882,6 +1988,7 @@ MeshFilter:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
+  - {fileID: 925928439}
   - {fileID: 255675901}
   - {fileID: 432158511}
   - {fileID: 311857614}
@@ -1890,4 +1997,5 @@ SceneRoots:
   - {fileID: 1807027461}
   - {fileID: 1862487604}
   - {fileID: 25000524}
+  - {fileID: 345385779}
   - {fileID: 147799358}
