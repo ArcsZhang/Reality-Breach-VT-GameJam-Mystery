@@ -11,6 +11,12 @@ public class LevelManager : MonoBehaviour
 	[SerializeField] public Portal portal;
 	[SerializeField] public ObjectBehavior player;
 
+	[Header("Abilities per level")]
+	[Tooltip("Uncheck to lock an ability for this scene. When no LevelManager is present, AbilityManager allows all abilities.")]
+	[SerializeField] private bool allowFoldAbility = true;
+	[SerializeField] private bool allowSnapshotAbility = true;
+	[SerializeField] private bool allowGravityAbility = true;
+
 	private void Awake()
 	{
 		if (Instance != null && Instance != this)
@@ -72,6 +78,24 @@ public class LevelManager : MonoBehaviour
 		}
 
 		return true;
+	}
+
+	/// <summary>
+	/// Whether the player may use this ability on this level. Fold / Snapshot / Gravity match AbilityManager indices 0–2.
+	/// </summary>
+	public bool IsAbilityAllowed(AbilityManager.AbilityType abilityType)
+	{
+		switch (abilityType)
+		{
+			case AbilityManager.AbilityType.Fold:
+				return allowFoldAbility;
+			case AbilityManager.AbilityType.Snapshot:
+				return allowSnapshotAbility;
+			case AbilityManager.AbilityType.Gravity:
+				return allowGravityAbility;
+			default:
+				return true;
+		}
 	}
 
 	public bool TryGetPlayer(out ObjectBehavior resolvedPlayer)
