@@ -16,9 +16,11 @@ public class ObjectBehavior : ColorManager
     private PlayerInput playerInput;
     private InputAction moveAction;
     private Rigidbody2D rigidBody2D;
+	private Renderer objectRenderer;
+	private Collider2D objectCollider;
+	private AudioSource audioSource;
     private Vector2 moveInput;
 	public bool hasDied;
-	public bool isHidden;
 	
 	public int isGrounded = 0;
 	public bool IsGrounded(){
@@ -31,6 +33,9 @@ public class ObjectBehavior : ColorManager
 
         playerInput = GetComponent<PlayerInput>();
         rigidBody2D = GetComponent<Rigidbody2D>();
+		audioSource = GetComponent<AudioSource>();
+		objectRenderer = GetComponent<Renderer>();
+		objectCollider = GetComponent<Collider2D>();
 		playerInput.defaultActionMap = "Player";
         moveAction = playerInput.actions[moveActionName];
 
@@ -170,6 +175,10 @@ public class ObjectBehavior : ColorManager
 
 		if (isPlayer)
 		{
+			if (audioSource != null && !audioSource.isPlaying)
+			{
+				audioSource.Play();
+			}
 			// make child camera not child of player so it doesn't get disabled immediately
 			Transform cameraTransform = transform.Find("Main Camera");
 			if (cameraTransform != null)
@@ -177,8 +186,11 @@ public class ObjectBehavior : ColorManager
 				cameraTransform.SetParent(null);
 			}
 		}
+		objectRenderer.enabled = false;
+		objectCollider.enabled = false;
+		this.enabled = false;
 
-		gameObject.SetActive(false);
+		// gameObject.SetActive(false);
 	}
 
     private void OnCollisionEnter2D(Collision2D collision)

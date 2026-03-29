@@ -10,7 +10,6 @@ public class EnemyBehavior : ColorManager
 	
 	[Header("Red Movement")]
 	[SerializeField] private float redAcceleration = 15f;
-	[SerializeField] private float redAttackRange = 0.01f;
 	
 	[Header("Green Movement")]
 	[SerializeField] private float moveSpeed = 6f;
@@ -25,7 +24,6 @@ public class EnemyBehavior : ColorManager
 	private Portal portal;
 	private Vector2 moveInput;
 	public bool hasDied;
-	public bool isHidden;
 
 	public int isGrounded = 1;
 	public bool IsGrounded(){
@@ -256,7 +254,17 @@ public class EnemyBehavior : ColorManager
 
     private void MoveTowardPlayer()
     {
-		if (player == null || player.GetComponent<ObjectBehavior>() == null || player.GetComponent<ObjectBehavior>().hasDied)
+		if (player == null)
+		{
+			return;
+		}
+		ObjectBehavior playerBehavior = player.GetComponent<ObjectBehavior>();
+		if (playerBehavior == null || playerBehavior.hasDied)
+		{
+			return;
+		}
+		Renderer playerRenderer = player.GetComponent<Renderer>();
+		if (playerRenderer == null || playerRenderer.enabled == false)
 		{
 			return;
 		}
