@@ -10,6 +10,7 @@ public class AbilityManager : MonoBehaviour
     [SerializeField] private string iconName;
 
     private Ability active => IsValidAbilityIndex(activeIndex) ? abilities[activeIndex] : null;
+	private AudioSource audioSource;
 
     public enum AbilityType
     {
@@ -26,6 +27,7 @@ public class AbilityManager : MonoBehaviour
 
     private void Awake()
     {
+		audioSource = GetComponent<AudioSource>();
         if (worldCamera == null)
         {
             worldCamera = Camera.main;
@@ -79,7 +81,10 @@ public class AbilityManager : MonoBehaviour
         }
         else if (keyboard.digit3Key.wasPressedThisFrame)
         {
-            iconName = "GravityAbilityIcon";
+			if (!audioSource.isPlaying)
+			{
+				audioSource.Play();
+			}
             switchTo((int)AbilityType.Gravity);
 
             Debug.Log("Switched to Gravity");

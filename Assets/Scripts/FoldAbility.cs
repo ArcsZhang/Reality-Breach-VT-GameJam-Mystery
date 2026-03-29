@@ -268,19 +268,20 @@ public class FoldAbility : Ability   // Extends ability
             }
 
             Vector3 worldPosition = candidate.position;
-            bool fullyInsideStrip = minProjection >= fold.Lo && maxProjection <= fold.Hi;
+            bool fullyOnSourceSide = maxProjection < fold.Lo;
             bool fullyOnShiftedSide = minProjection > fold.Hi;
+            bool intersectsOrTouchesStrip = !fullyOnSourceSide && !fullyOnShiftedSide;
 
-            if (!fullyInsideStrip && !fullyOnShiftedSide)
+            if (fullyOnSourceSide)
             {
                 continue;
             }
 
             NonFoldableState state = CaptureNonFoldableState(candidate, worldPosition);
-            state.WasHiddenInStrip = fullyInsideStrip;
+            state.WasHiddenInStrip = intersectsOrTouchesStrip;
             nonFoldableStates[candidate] = state;
 
-            if (fullyInsideStrip)
+            if (intersectsOrTouchesStrip)
             {
                 DisableNonFoldable(state);
                 continue;

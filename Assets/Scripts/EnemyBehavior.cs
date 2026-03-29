@@ -7,10 +7,18 @@ public class EnemyBehavior : ColorManager
 {
 	[Tooltip("Any layer that should obstruct line of site.")]
 	public LayerMask obstacleLayer;
+
+	[Tooltip("Special layer for yellow walls.")]
+	public LayerMask yellowLayer;
 	
 	[Header("Red Movement")]
 	[SerializeField] private float redAcceleration = 15f;
 	[SerializeField] private float redAttackRange = 0.01f;
+
+	[Header("Yellow Attack")]
+	[SerializeField] private GameObject projectileObject;
+	[SerializeField] private float fireRate = 0.5f;
+	[SerializeField] private float projectileSpawnDistance = 1f;
 	
 	[Header("Green Movement")]
 	[SerializeField] private float moveSpeed = 6f;
@@ -21,13 +29,14 @@ public class EnemyBehavior : ColorManager
 	private PlayerInput playerInput;
 	private InputAction moveAction;
 	private Rigidbody2D rigidBody2D;
+	private SpriteRenderer spriteRenderer;
 	private Transform player;
 	private Portal portal;
 	private Vector2 moveInput;
+	private float fireTimer;
 	public bool hasDied;
-	public bool isHidden;
 
-	public int isGrounded = 1;
+	public int isGrounded = 0;
 	public bool IsGrounded(){
 		return isGrounded > 0;
 	}
@@ -106,7 +115,9 @@ public class EnemyBehavior : ColorManager
 	}
 
 	protected override void OnYellowChanged(ColorState previous)
-	{
+	{		
+		rigidBody2D = GetComponent<Rigidbody2D>();
+		rigidBody2D.gravityScale = 0f;
 	}
 
 	protected override void OnGreenChanged(ColorState previous)
@@ -131,6 +142,10 @@ public class EnemyBehavior : ColorManager
 		{
 			moveInput = Vector2.zero;
 		}
+
+		if (previousColor == ColorState.Yellow && newColor != ColorState.Yellow)
+		{
+		}
 	}
 
 	protected override void OnRedUpdate()
@@ -141,8 +156,7 @@ public class EnemyBehavior : ColorManager
             return;
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);
 
-		MoveTowardPlayer();
-
+		MoveTowardPlayer(redAcceleration);
     }
 
     protected override void OnOrangeUpdate()
@@ -151,6 +165,19 @@ public class EnemyBehavior : ColorManager
 
 	protected override void OnYellowUpdate()
 	{
+		if (player == null)
+			return;
+		if (!IsVisible())
+			return;
+		
+		RotateTowardPlayer();
+
+		fireTimer -= Time.deltaTime;
+		if (fireTimer <= 0f)
+		{
+			FireProjectile();
+			fireTimer = fireRate;
+		}
 	}
 
 	protected override void OnGreenUpdate()
@@ -254,23 +281,53 @@ public class EnemyBehavior : ColorManager
 		ColorCollisionResolver.ResolveEnemyTouch(this, col.gameObject);
     }
 
-    private void MoveTowardPlayer()
+    private void MoveTowardPlayer(float acceleration)
     {
-		if (player == null || player.GetComponent<ObjectBehavior>() == null || player.GetComponent<ObjectBehavior>().hasDied)
+		if (player == null)
+		{
+			return;
+		}
+		ObjectBehavior playerBehavior = player.GetComponent<ObjectBehavior>();
+		if (playerBehavior == null || playerBehavior.hasDied)
+		{
+			return;
+		}
+		Renderer playerRenderer = player.GetComponent<Renderer>();
+		if (playerRenderer == null || playerRenderer.enabled == false)
 		{
 			return;
 		}
         Vector2 direction = ((Vector2)player.position - (Vector2)transform.position).normalized;
-		rigidBody2D.AddForce(direction * redAcceleration);
+		rigidBody2D.AddForce(direction * acceleration);
     }
+
+	private void RotateTowardPlayer()
+	{
+		Vector2 direction = ((Vector2)player.position - (Vector2)transform.position).normalized;
+		float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+		transform.rotation = Quaternion.Euler(0f, 0f, angle);
+	}
+
     private bool IsVisible()
     {
         Vector2 origin = transform.position;
         Vector2 target = player.position;
-
+			
         RaycastHit2D hit = Physics2D.Linecast(origin, target, obstacleLayer);
         return hit.collider == null;
     }
+
+	private void FireProjectile()
+	{
+		if (projectileObject == null)
+			return;
+
+		Vector2 direction = ((Vector2)player.position - (Vector2)transform.position).normalized;
+		Vector2 spawnPoint = (Vector2)transform.position + direction * projectileSpawnDistance;
+
+		projectileObject.GetComponent<ProjectileManager>().source = this;
+		GameObject projectile = Instantiate(projectileObject, spawnPoint, transform.rotation);
+	}
 
 	private void OnTriggerEnter2D(Collider2D collision)
 	{
@@ -280,5 +337,6 @@ public class EnemyBehavior : ColorManager
 	private void OnTriggerExit2D(Collider2D collision)
 	{
 		if (collision.gameObject.layer == 6) isGrounded -= 1;
+		if (!IsGrounded() && Physics2D.gravity == Vector2.zero) Die();
 	}
 }

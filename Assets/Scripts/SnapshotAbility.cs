@@ -6,12 +6,19 @@ using UnityEngine.UI;
 
 public class SnapshotAbility : Ability
 {
+    public enum CaptureMode
+    {
+        ClippedTerrain,
+        FullCopy
+    }
+
     [Serializable]
     public sealed class SnapshotCapturedEntry
     {
         public GameObject Original;
         public Vector2 OffsetFromCenter;
         public bool SourceIsTrigger;
+        public CaptureMode Mode;
 
         /// <summary> Polygon of the overlapping region in world space (from collider path clipped to the rect), or null if none / not a polygon collider. </summary>
         public List<Vector2> ClippedPolygonWorld;
@@ -451,10 +458,43 @@ public class SnapshotAbility : Ability
             }
 
             Vector2 objectPos = snapshottables[i].transform.position;
+            GameObject sourceObject = snapshottables[i].gameObject;
+
+            ObjectBehavior sourceObjectBehavior = sourceObject.GetComponent<ObjectBehavior>();
+            EnemyBehavior sourceEnemyBehavior = sourceObject.GetComponent<EnemyBehavior>();
+            bool isEntityTarget = sourceObjectBehavior != null || sourceEnemyBehavior != null;
+            if (isEntityTarget)
+            {
+                if (sourceObjectBehavior != null && sourceObjectBehavior.isPlayer)
+                {
+                    continue;
+                }
+
+                if (!rect.Contains(objectPos))
+                {
+                    continue;
+                }
+
+                Collider2D sourceEntityCollider = sourceObject.GetComponent<Collider2D>();
+                var fullCopyEntry = new SnapshotCapturedEntry
+                {
+                    Original = sourceObject,
+                    OffsetFromCenter = objectPos - center,
+                    SourceIsTrigger = sourceEntityCollider != null && sourceEntityCollider.isTrigger,
+                    Mode = CaptureMode.FullCopy,
+                    ClippedPolygonWorld = null,
+                    ClippedCentroidWorld = objectPos
+                };
+
+                captured.Add(fullCopyEntry);
+                snapshottables[i].Freeze();
+                continue;
+            }
+
             bool capturedAnyPiece = false;
 
-            PolygonCollider2D poly = snapshottables[i].GetComponent<PolygonCollider2D>();
-            Collider2D sourceCollider = snapshottables[i].GetComponent<Collider2D>();
+            PolygonCollider2D poly = sourceObject.GetComponent<PolygonCollider2D>();
+            Collider2D sourceCollider = sourceObject.GetComponent<Collider2D>();
             bool sourceIsTrigger = (poly != null && poly.isTrigger) || (sourceCollider != null && sourceCollider.isTrigger);
 
             if (poly != null && poly.pathCount > 0)
@@ -476,9 +516,10 @@ public class SnapshotAbility : Ability
 
                     var entry = new SnapshotCapturedEntry
                     {
-                        Original = snapshottables[i].gameObject,
+                        Original = sourceObject,
                         OffsetFromCenter = objectPos - center,
                         SourceIsTrigger = sourceIsTrigger,
+                        Mode = CaptureMode.ClippedTerrain,
                         ClippedPolygonWorld = clipped,
                         ClippedCentroidWorld = ComputePolygonCentroid(clipped)
                     };
@@ -491,9 +532,10 @@ public class SnapshotAbility : Ability
             {
                 var entry = new SnapshotCapturedEntry
                 {
-                    Original = snapshottables[i].gameObject,
+                    Original = sourceObject,
                     OffsetFromCenter = objectPos - center,
                     SourceIsTrigger = sourceIsTrigger,
+                    Mode = CaptureMode.ClippedTerrain,
                     ClippedPolygonWorld = null
                 };
 
@@ -607,6 +649,12 @@ public class SnapshotAbility : Ability
                 originalSnap.Unfreeze();
             }
 
+            if (entry.Mode == CaptureMode.FullCopy)
+            {
+                SpawnFullCopyClone(entry, pasteWorld);
+                continue;
+            }
+
             if (entry.ClippedPolygonWorld == null || entry.ClippedPolygonWorld.Count < 3)
             {
                 continue;
@@ -642,6 +690,7 @@ public class SnapshotAbility : Ability
         GameObject go = new GameObject("SnapshotFragment");
         go.transform.SetPositionAndRotation(new Vector3(worldPosition.x, worldPosition.y, z), entry.Original.transform.rotation);
         go.layer = entry.Original.layer;
+        go.tag = entry.Original.tag;
 
         PolygonCollider2D poly = go.AddComponent<PolygonCollider2D>();
         poly.SetPath(0, localPath);
@@ -679,7 +728,75 @@ public class SnapshotAbility : Ability
             meshRenderer.sortingOrder = origSprite.sortingOrder;
         }
 
+        CopyBehaviourComponents(entry.Original, go, ShouldCopyToClippedFragment);
         go.AddComponent<SnapshotableObject>();
+    }
+
+    private void SpawnFullCopyClone(SnapshotCapturedEntry entry, Vector2 pasteWorld)
+    {
+        GameObject clone = Instantiate(entry.Original);
+        clone.name = entry.Original.name + "_SnapshotCopy";
+
+        Vector3 sourcePosition = entry.Original.transform.position;
+        Vector2 targetPosition2D = pasteWorld + entry.OffsetFromCenter;
+        clone.transform.position = new Vector3(targetPosition2D.x, targetPosition2D.y, sourcePosition.z);
+
+        if (clone.GetComponent<EnemyBehavior>() != null && LevelManager.Instance != null)
+        {
+            LevelManager.Instance.RegisterEnemy();
+        }
+    }
+
+    private static bool ShouldCopyToClippedFragment(Type componentType)
+    {
+        if (componentType == null)
+        {
+            return false;
+        }
+
+        if (componentType == typeof(SnapshotableObject))
+        {
+            return false;
+        }
+
+        if (componentType == typeof(ObjectBehavior) || componentType == typeof(EnemyBehavior))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private static void CopyBehaviourComponents(GameObject source, GameObject target, Func<Type, bool> shouldCopy)
+    {
+        MonoBehaviour[] sourceBehaviours = source.GetComponents<MonoBehaviour>();
+        for (int i = 0; i < sourceBehaviours.Length; i++)
+        {
+            MonoBehaviour sourceBehaviour = sourceBehaviours[i];
+            if (sourceBehaviour == null)
+            {
+                continue;
+            }
+
+            Type componentType = sourceBehaviour.GetType();
+            if (shouldCopy != null && !shouldCopy(componentType))
+            {
+                continue;
+            }
+
+            if (target.GetComponent(componentType) != null)
+            {
+                continue;
+            }
+
+            MonoBehaviour newBehaviour = target.AddComponent(componentType) as MonoBehaviour;
+            if (newBehaviour == null)
+            {
+                continue;
+            }
+
+            JsonUtility.FromJsonOverwrite(JsonUtility.ToJson(sourceBehaviour), newBehaviour);
+        }
     }
 
     private static float polygonArea(Vector2[] localLoop)
