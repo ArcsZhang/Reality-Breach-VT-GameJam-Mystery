@@ -1,0 +1,119 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1540310985401754950
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5809628259675455978}
+  - component: {fileID: 14881461185388809}
+  - component: {fileID: 4963103703378323}
+  - component: {fileID: 531357783082439453}
+  - component: {fileID: 2906907184250665350}
+  m_Layer: 0
+  m_Name: AbilityManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5809628259675455978
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1540310985401754950}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &14881461185388809
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1540310985401754950}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 872eb3217e12d5e41b449c75f02069af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AbilityManager
+  abilities:
+  - {fileID: 4963103703378323}
+  - {fileID: 531357783082439453}
+  - {fileID: 2906907184250665350}
+  activeIndex: 1
+  abilityInputEnabled: 1
+  worldCamera: {fileID: 0}
+--- !u!114 &4963103703378323
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1540310985401754950}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57d9adea639201647b2f53a16d564f70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FoldAbility
+  foldMouseButton: 0
+  minimumFoldDistance: 0.05
+  lineHalfLength: 40
+  unfoldNodeRadius: 0.25
+  previewLineColor: {r: 1, g: 0.85, b: 0.2, a: 0.8}
+  previewStripColor: {r: 1, g: 0.85, b: 0.2, a: 0.14}
+  activeSeamColor: {r: 0.49, g: 0.83, b: 0.99, a: 0.95}
+  unfoldNodeColor: {r: 0.65, g: 0.95, b: 0.99, a: 0.95}
+  lineWidth: 0.05
+--- !u!114 &531357783082439453
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1540310985401754950}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44234a578d0be074bb2fb36b0bbc611e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SnapshotAbility
+  snapshotHudImage: {fileID: 0}
+  hudFollowWorldOffset: {x: 0, y: 0, z: 0}
+  hudScreenPixelOffset: {x: 0, y: 0}
+  hudFollowTarget: {fileID: 0}
+  hudCaptureWorldZ: 0
+  hudIgnoreParentLayout: 1
+  snapshotTextureMaxEdge: 512
+  minSnapshotWorldSize: 0.05
+--- !u!114 &2906907184250665350
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1540310985401754950}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3853d5aa734a8c42bd8287db2cb57ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GravityAbility
+  playerObject: {fileID: 0}
+  gravityStrength: 9.81
+  centerDeadzonePixels: 80
+  startingGravity: {x: 0, y: 0}
+  indicatorLengthWorld: 2.5
+  indicatorWidth: 0.06
+  deadzoneRingSegments: 32
+  indicatorColor: {r: 0.4, g: 0.9, b: 1, a: 0.95}
+  neutralColor: {r: 0.9, g: 0.9, b: 0.9, a: 0.9}
+  deadzoneRingColor: {r: 1, g: 0.95, b: 0.2, a: 0.7}

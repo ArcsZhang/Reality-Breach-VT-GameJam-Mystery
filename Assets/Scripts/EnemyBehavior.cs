@@ -25,7 +25,7 @@ public class EnemyBehavior : ColorManager
 	private Vector2 moveInput;
 	public bool hasDied;
 
-	public int isGrounded = 1;
+	public int isGrounded = 0;
 	public bool IsGrounded(){
 		return isGrounded > 0;
 	}
@@ -288,5 +288,6 @@ public class EnemyBehavior : ColorManager
 	private void OnTriggerExit2D(Collider2D collision)
 	{
 		if (collision.gameObject.layer == 6) isGrounded -= 1;
+		if (!IsGrounded() && Physics2D.gravity == Vector2.zero) Die();
 	}
 }

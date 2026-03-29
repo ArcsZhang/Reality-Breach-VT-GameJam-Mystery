@@ -211,5 +211,6 @@ public class ObjectBehavior : ColorManager
 	private void OnTriggerExit2D(Collider2D collision)
 	{
 		if (collision.gameObject.layer == 6) isGrounded -= 1;
+		if (!IsGrounded() && Physics2D.gravity == Vector2.zero) Die();
 	}
 }
