@@ -13,7 +13,8 @@ GameObject:
   - component: {fileID: 9071314145272125856}
   - component: {fileID: 1129670149473414931}
   - component: {fileID: 1598623778093373575}
-  m_Layer: 0
+  - component: {fileID: 1736977345437835714}
+  m_Layer: 10
   m_Name: Projectile
   m_TagString: Projectile
   m_Icon: {fileID: 0}
@@ -108,6 +109,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ProjectileManager
   projectileSpeed: 10
   lifetime: 100
+  applyInitialVisualRotation: 1
 --- !u!50 &1129670149473414931
 Rigidbody2D:
   serializedVersion: 5
@@ -172,3 +174,15 @@ CapsuleCollider2D:
   m_Offset: {x: 0, y: 0}
   m_Size: {x: 1, y: 2}
   m_Direction: 0
+--- !u!114 &1736977345437835714
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8840789182456116912}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1be5e2f9ffb54524aa4dea36627d6ff1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SnapshotableObject

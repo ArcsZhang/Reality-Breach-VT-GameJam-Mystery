@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 public class LevelManager : MonoBehaviour
@@ -11,12 +12,15 @@ public class LevelManager : MonoBehaviour
 	[SerializeField] public Portal portal;
 	[SerializeField] public ObjectBehavior player;
 
+	private PlayerInput playerInput;
+	private InputAction restartAction;
+	private bool isRestarting;
+
 	private void Awake()
 	{
 		if (Instance != null && Instance != this)
         {
-            Destroy(gameObject); // enforce single instance
-            return;
+            Destroy(Instance.gameObject);
         }
 
         Instance = this;
@@ -25,12 +29,58 @@ public class LevelManager : MonoBehaviour
 
 	private void Start()
     {
+		BindRestartAction();
 		ResolveSceneReferences();
 
 		if (portal != null)
 		{
 			portal.nextLevelScene = nextLevelName;
 		}
+	}
+
+	private void OnEnable()
+	{
+		BindRestartAction();
+	}
+
+	private void OnDisable()
+	{
+		restartAction?.Disable();
+	}
+
+	private void Update()
+	{
+		if (isRestarting)
+		{
+			return;
+		}
+
+		if (restartAction != null && restartAction.WasPressedThisFrame())
+		{
+			isRestarting = true;
+			Instance = null;
+			SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+		}
+	}
+
+	private void BindRestartAction()
+	{
+		if (playerInput == null)
+		{
+			playerInput = GetComponent<PlayerInput>();
+		}
+
+		if (playerInput == null)
+		{
+			return;
+		}
+
+		playerInput.defaultActionMap = "Player";
+		restartAction = playerInput.actions != null
+			? playerInput.actions.FindAction("Restart", throwIfNotFound: false)
+			: null;
+
+		restartAction?.Enable();
 	}
 
 	private void OnDestroy()

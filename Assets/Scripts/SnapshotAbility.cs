@@ -19,6 +19,7 @@ public class SnapshotAbility : Ability
         public Vector2 OffsetFromCenter;
         public bool SourceIsTrigger;
         public CaptureMode Mode;
+        public ColorManager.ColorState SourceColorState;
 
         /// <summary> Polygon of the overlapping region in world space (from collider path clipped to the rect), or null if none / not a polygon collider. </summary>
         public List<Vector2> ClippedPolygonWorld;
@@ -444,33 +445,52 @@ public class SnapshotAbility : Ability
     {
         Vector2 center = rect.Center;
         List<SnapshotCapturedEntry> captured = new List<SnapshotCapturedEntry>();
+        List<GameObject> candidates = GatherCaptureCandidates();
 
-        for (int i = 0; i < snapshottables.Length; i++)
+        for (int i = 0; i < candidates.Count; i++)
         {
-            if (snapshottables[i] == null)
+            GameObject sourceObject = candidates[i];
+            if (sourceObject == null)
             {
                 continue;
             }
 
-            if (!OverlapsRect(snapshottables[i], rect))
+            if (!OverlapsRect(sourceObject, rect))
             {
                 continue;
             }
 
-            Vector2 objectPos = snapshottables[i].transform.position;
-            GameObject sourceObject = snapshottables[i].gameObject;
+            Vector2 objectPos = sourceObject.transform.position;
+            SnapshotableObject snapshotable = sourceObject.GetComponent<SnapshotableObject>();
+            ColorManager sourceColorManager = sourceObject.GetComponent<ColorManager>();
+            ColorManager.ColorState sourceColorState = sourceColorManager != null
+                ? sourceColorManager.GetColor()
+                : ColorManager.ColorState.White;
 
             ObjectBehavior sourceObjectBehavior = sourceObject.GetComponent<ObjectBehavior>();
             EnemyBehavior sourceEnemyBehavior = sourceObject.GetComponent<EnemyBehavior>();
-            bool isEntityTarget = sourceObjectBehavior != null || sourceEnemyBehavior != null;
+            ProjectileManager sourceProjectile = sourceObject.GetComponent<ProjectileManager>();
+
+            if (sourceProjectile != null)
+            {
+                continue;
+            }
+
+            bool isEntityTarget = sourceObjectBehavior != null || sourceEnemyBehavior != null || sourceProjectile != null;
             if (isEntityTarget)
             {
+                if ((sourceObjectBehavior != null || sourceEnemyBehavior != null) && snapshotable == null)
+                {
+                    continue;
+                }
+
                 if (sourceObjectBehavior != null && sourceObjectBehavior.isPlayer)
                 {
                     continue;
                 }
 
-                if (!rect.Contains(objectPos))
+                bool requiresCenterInRect = sourceObjectBehavior != null || sourceEnemyBehavior != null;
+                if (requiresCenterInRect && !rect.Contains(objectPos))
                 {
                     continue;
                 }
@@ -482,12 +502,12 @@ public class SnapshotAbility : Ability
                     OffsetFromCenter = objectPos - center,
                     SourceIsTrigger = sourceEntityCollider != null && sourceEntityCollider.isTrigger,
                     Mode = CaptureMode.FullCopy,
+                    SourceColorState = sourceColorState,
                     ClippedPolygonWorld = null,
                     ClippedCentroidWorld = objectPos
                 };
 
                 captured.Add(fullCopyEntry);
-                snapshottables[i].Freeze();
                 continue;
             }
 
@@ -520,6 +540,7 @@ public class SnapshotAbility : Ability
                         OffsetFromCenter = objectPos - center,
                         SourceIsTrigger = sourceIsTrigger,
                         Mode = CaptureMode.ClippedTerrain,
+                        SourceColorState = sourceColorState,
                         ClippedPolygonWorld = clipped,
                         ClippedCentroidWorld = ComputePolygonCentroid(clipped)
                     };
@@ -536,6 +557,7 @@ public class SnapshotAbility : Ability
                     OffsetFromCenter = objectPos - center,
                     SourceIsTrigger = sourceIsTrigger,
                     Mode = CaptureMode.ClippedTerrain,
+                    SourceColorState = sourceColorState,
                     ClippedPolygonWorld = null
                 };
 
@@ -545,11 +567,62 @@ public class SnapshotAbility : Ability
 
             if (capturedAnyPiece)
             {
-                snapshottables[i].Freeze();
+                snapshotable?.Freeze();
             }
         }
 
         currentSnapshot = captured.ToArray();
+    }
+
+    private List<GameObject> GatherCaptureCandidates()
+    {
+        HashSet<GameObject> unique = new HashSet<GameObject>();
+        List<GameObject> candidates = new List<GameObject>();
+
+        for (int i = 0; i < snapshottables.Length; i++)
+        {
+            SnapshotableObject snap = snapshottables[i];
+            if (snap == null)
+            {
+                continue;
+            }
+
+            GameObject go = snap.gameObject;
+            if (go != null && unique.Add(go))
+            {
+                candidates.Add(go);
+            }
+        }
+
+        AddCandidatesFromComponents(FindObjectsByType<ObjectBehavior>(), unique, candidates);
+        AddCandidatesFromComponents(FindObjectsByType<EnemyBehavior>(), unique, candidates);
+        AddCandidatesFromComponents(FindObjectsByType<TerrainBehavior>(), unique, candidates);
+
+        return candidates;
+    }
+
+    private static void AddCandidatesFromComponents<T>(T[] components, HashSet<GameObject> unique, List<GameObject> candidates)
+        where T : Component
+    {
+        if (components == null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < components.Length; i++)
+        {
+            T comp = components[i];
+            if (comp == null)
+            {
+                continue;
+            }
+
+            GameObject go = comp.gameObject;
+            if (go != null && unique.Add(go))
+            {
+                candidates.Add(go);
+            }
+        }
     }
 
     private static Vector2 ComputePolygonCentroid(IReadOnlyList<Vector2> polygon)
@@ -730,6 +803,7 @@ public class SnapshotAbility : Ability
 
         CopyBehaviourComponents(entry.Original, go, ShouldCopyToClippedFragment);
         go.AddComponent<SnapshotableObject>();
+        InitializeCopiedColorState(go, entry.SourceColorState);
     }
 
     private void SpawnFullCopyClone(SnapshotCapturedEntry entry, Vector2 pasteWorld)
@@ -740,6 +814,22 @@ public class SnapshotAbility : Ability
         Vector3 sourcePosition = entry.Original.transform.position;
         Vector2 targetPosition2D = pasteWorld + entry.OffsetFromCenter;
         clone.transform.position = new Vector3(targetPosition2D.x, targetPosition2D.y, sourcePosition.z);
+
+        ProjectileManager projectileManager = clone.GetComponent<ProjectileManager>();
+        if (projectileManager != null)
+        {
+            Rigidbody2D sourceProjectileBody = entry.Original.GetComponent<Rigidbody2D>();
+            if (sourceProjectileBody != null)
+            {
+                projectileManager.InitializeSnapshotClone(sourceProjectileBody.linearVelocity);
+            }
+            else
+            {
+                projectileManager.SetSkipInitialVisualRotation(true);
+            }
+        }
+
+        InitializeCopiedColorState(clone, entry.SourceColorState);
 
         if (clone.GetComponent<EnemyBehavior>() != null && LevelManager.Instance != null)
         {
@@ -796,6 +886,75 @@ public class SnapshotAbility : Ability
             }
 
             JsonUtility.FromJsonOverwrite(JsonUtility.ToJson(sourceBehaviour), newBehaviour);
+        }
+    }
+
+    private static void InitializeCopiedColorState(GameObject copiedObject, ColorManager.ColorState sourceColorState)
+    {
+        if (copiedObject == null)
+        {
+            return;
+        }
+
+        ColorManager colorManager = copiedObject.GetComponent<ColorManager>();
+        if (colorManager == null)
+        {
+            return;
+        }
+
+        colorManager.SetColor(sourceColorState);
+        ApplyVisualColorToCopiedObject(copiedObject, sourceColorState);
+    }
+
+    private static void ApplyVisualColorToCopiedObject(GameObject copiedObject, ColorManager.ColorState colorState)
+    {
+        Color visualColor = ToUnityColor(colorState);
+
+        SpriteRenderer[] spriteRenderers = copiedObject.GetComponentsInChildren<SpriteRenderer>(true);
+        for (int i = 0; i < spriteRenderers.Length; i++)
+        {
+            if (spriteRenderers[i] != null)
+            {
+                spriteRenderers[i].color = visualColor;
+            }
+        }
+
+        MeshRenderer[] meshRenderers = copiedObject.GetComponentsInChildren<MeshRenderer>(true);
+        for (int i = 0; i < meshRenderers.Length; i++)
+        {
+            MeshRenderer renderer = meshRenderers[i];
+            if (renderer == null)
+            {
+                continue;
+            }
+
+            Material material = renderer.material;
+            if (material != null && material.HasProperty("_Color"))
+            {
+                material.color = visualColor;
+            }
+        }
+    }
+
+    private static Color ToUnityColor(ColorManager.ColorState state)
+    {
+        switch (state)
+        {
+            case ColorManager.ColorState.Red:
+                return Color.red;
+            case ColorManager.ColorState.Orange:
+                return new Color(1f, 0.5f, 0f);
+            case ColorManager.ColorState.Yellow:
+                return Color.yellow;
+            case ColorManager.ColorState.Green:
+                return Color.green;
+            case ColorManager.ColorState.Blue:
+                return new Color(0f, 0.5f, 1f);
+            case ColorManager.ColorState.Purple:
+                return new Color(0.5f, 0f, 1f);
+            case ColorManager.ColorState.White:
+            default:
+                return Color.white;
         }
     }
 
@@ -1063,6 +1222,24 @@ public class SnapshotAbility : Ability
 
     private bool OverlapsRect(SnapshotableObject obj, SnapshotRectangle2D rect)
     {
+        Collider2D col = obj.GetComponent<Collider2D>();
+        if (col != null)
+        {
+            Bounds b = col.bounds;
+            return b.min.x <= rect.Max.x && b.max.x >= rect.Min.x &&
+                   b.min.y <= rect.Max.y && b.max.y >= rect.Min.y;
+        }
+
+        return rect.Contains(obj.transform.position);
+    }
+
+    private bool OverlapsRect(GameObject obj, SnapshotRectangle2D rect)
+    {
+        if (obj == null)
+        {
+            return false;
+        }
+
         Collider2D col = obj.GetComponent<Collider2D>();
         if (col != null)
         {
