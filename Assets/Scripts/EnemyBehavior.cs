@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -9,7 +10,7 @@ public class EnemyBehavior : ColorManager
 	public LayerMask obstacleLayer;
 	
 	[Header("Red Movement")]
-	[SerializeField] private float redAcceleration = 80f;
+	[SerializeField] private float redAcceleration = 15f;
 	[SerializeField] private float redAttackRange = 0.01f;
 	
 	[Header("Green Movement")]
@@ -99,12 +100,7 @@ public class EnemyBehavior : ColorManager
             return;
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);
 
-		if (distanceToPlayer < redAttackRange)
-		{
-			// kill player
-		}
-		else
-			MoveTowardPlayer();
+		MoveTowardPlayer();
 
     }
 
@@ -176,6 +172,18 @@ public class EnemyBehavior : ColorManager
 		Vector2 newVelocity = Vector2.MoveTowards(currentVelocity, targetVelocity, groundRate);
 		rigidBody2D.linearVelocity = Vector2.ClampMagnitude(newVelocity, moveSpeed);
 	}
+
+    private void OnCollisionEnter2D(Collision2D col)
+    {
+		if (GetColor() != ColorState.Red)
+			return;
+		ColorState colColor = col.gameObject.GetComponent<ColorManager>().GetColor();
+		
+		if (col.gameObject.GetComponent<EnemyBehavior>() != null || colColor == ColorState.Green)
+		{
+			col.gameObject.SetActive(false);
+		}
+    }
 
     private void MoveTowardPlayer()
     {

@@ -259,7 +259,7 @@ GameObject:
   - component: {fileID: 237354355}
   - component: {fileID: 237354354}
   - component: {fileID: 237354353}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Object (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -513,7 +513,7 @@ GameObject:
   - component: {fileID: 441090723}
   - component: {fileID: 441090722}
   - component: {fileID: 441090727}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Object (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -691,7 +691,7 @@ GameObject:
   - component: {fileID: 984583179}
   - component: {fileID: 984583183}
   - component: {fileID: 984583182}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Object
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1030,10 +1030,8 @@ MonoBehaviour:
   targetMeshRenderer: {fileID: 0}
   obstacleLayer:
     serializedVersion: 2
-    m_Bits: 0
-  redSpeed: 8
-  redAcceleration: 500
-  redVisionRange: 0
+    m_Bits: 64
+  redAcceleration: 1
   redAttackRange: 3
   moveSpeed: 6
   acceleration: 80
@@ -1052,7 +1050,7 @@ GameObject:
   - component: {fileID: 1693720834}
   - component: {fileID: 1693720833}
   - component: {fileID: 1693720832}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Object (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1388,9 +1386,7 @@ MonoBehaviour:
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 0
-  redSpeed: 8
   redAcceleration: 80
-  redVisionRange: 0
   redAttackRange: 3
   moveSpeed: 6
   acceleration: 80
@@ -1442,7 +1438,7 @@ GameObject:
   - component: {fileID: 1869815254}
   m_Layer: 0
   m_Name: Circle
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1477,7 +1473,7 @@ CircleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
@@ -1654,11 +1650,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6414990357459468998, guid: 1bc9b933f4001c340940dec825dd4392, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.29499
+      value: -6.98
       objectReference: {fileID: 0}
     - target: {fileID: 6414990357459468998, guid: 1bc9b933f4001c340940dec825dd4392, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.14778
+      value: 1.69
       objectReference: {fileID: 0}
     - target: {fileID: 6414990357459468998, guid: 1bc9b933f4001c340940dec825dd4392, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1691,6 +1687,10 @@ PrefabInstance:
     - target: {fileID: 6414990357459468998, guid: 1bc9b933f4001c340940dec825dd4392, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8403879301815296722, guid: 1bc9b933f4001c340940dec825dd4392, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
