@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class ProjectileManager : MonoBehaviour
 {
+    public EnemyBehavior source;
+    
     [SerializeField] private float projectileSpeed = 200.0f;
     [SerializeField] private float lifetime = 100f;
 
@@ -21,7 +23,7 @@ public class ProjectileManager : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Player"))
-            Destroy(collision.gameObject);
+            ColorCollisionResolver.ResolveEnemyTouch(source, collision.gameObject);
         Destroy(gameObject);
     }
 }

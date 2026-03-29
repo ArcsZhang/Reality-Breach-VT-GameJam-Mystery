@@ -209,7 +209,13 @@ MonoBehaviour:
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 256
+  yellowLayer:
+    serializedVersion: 2
+    m_Bits: 0
   redAcceleration: 1
+  redAttackRange: 0.01
+  projectileObject: {fileID: 8840789182456116912, guid: d5e35a929b025cb418b004371ef1aaf5, type: 3}
+  fireRate: 0.5
   moveSpeed: 6
   acceleration: 80
   deceleration: 100
