@@ -8,6 +8,7 @@ public class GravityAbility : Ability
 	[Header("Gravity")]
 	[SerializeField] private float gravityStrength = 9.81f;
 	[SerializeField] private float centerDeadzonePixels = 80f;
+	[SerializeField] private Vector2 startingGravity = Vector2.zero;
 
 	[Header("Indicator")]
 	[SerializeField] private float indicatorLengthWorld = 2.5f;
@@ -29,6 +30,7 @@ public class GravityAbility : Ability
 
 		InitializeVisuals();
 		SetVisualsEnabled(false);
+		Physics2D.gravity = startingGravity;
 	}
 
 	public override void Initialize(Camera cam)

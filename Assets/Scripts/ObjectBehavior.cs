@@ -16,7 +16,11 @@ public class ObjectBehavior : ColorManager
     private PlayerInput playerInput;
     private InputAction moveAction;
     private Rigidbody2D rigidBody2D;
+	private Renderer objectRenderer;
+	private Collider2D objectCollider;
+	private AudioSource audioSource;
     private Vector2 moveInput;
+	public bool hasDied;
 	
 	public int isGrounded = 0;
 	public bool IsGrounded(){
@@ -29,6 +33,9 @@ public class ObjectBehavior : ColorManager
 
         playerInput = GetComponent<PlayerInput>();
         rigidBody2D = GetComponent<Rigidbody2D>();
+		audioSource = GetComponent<AudioSource>();
+		objectRenderer = GetComponent<Renderer>();
+		objectCollider = GetComponent<Collider2D>();
 		playerInput.defaultActionMap = "Player";
         moveAction = playerInput.actions[moveActionName];
 
@@ -157,6 +164,45 @@ public class ObjectBehavior : ColorManager
         rigidBody2D.linearVelocity = Vector2.ClampMagnitude(newVelocity, moveSpeed);
     }
 
+	public void Die()
+	{
+		if (hasDied)
+		{
+			return;
+		}
+
+		hasDied = true;
+
+		if (isPlayer)
+		{
+			if (audioSource != null && !audioSource.isPlaying)
+			{
+				audioSource.Play();
+			}
+			// make child camera not child of player so it doesn't get disabled immediately
+			Transform cameraTransform = transform.Find("Main Camera");
+			if (cameraTransform != null)
+			{
+				cameraTransform.SetParent(null);
+			}
+		}
+		objectRenderer.enabled = false;
+		objectCollider.enabled = false;
+		this.enabled = false;
+
+		// gameObject.SetActive(false);
+	}
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision == null)
+        {
+            return;
+        }
+
+        ColorCollisionResolver.ResolveObjectTouch(this, collision.gameObject);
+    }
+
 	private void OnTriggerEnter2D(Collider2D collision)
 	{
 		if (collision.gameObject.layer == 6) isGrounded += 1;
@@ -165,5 +211,6 @@ public class ObjectBehavior : ColorManager
 	private void OnTriggerExit2D(Collider2D collision)
 	{
 		if (collision.gameObject.layer == 6) isGrounded -= 1;
+		if (!IsGrounded() && Physics2D.gravity == Vector2.zero) Die();
 	}
 }
