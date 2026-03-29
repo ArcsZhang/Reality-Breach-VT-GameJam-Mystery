@@ -98,6 +98,11 @@ public class SnapshotAbility : Ability
     public SnapshotRectangle2D LastCapturedRectWorld => lastCapturedRectWorld;
     public bool HasHudSnapshot => snapshotHudImage != null && snapshotHudImage.texture != null;
 
+    [SerializeField] private float cooldownDuration = 10f; // different per ability
+    private float cooldownTimer = 0f;
+    public bool IsOnCooldown => cooldownTimer > 0f;
+    public float GetCooldownProgress() => Mathf.Clamp01(cooldownTimer / cooldownDuration);
+
     public void Awake()
     {
         if (WorldCamera == null)
@@ -162,6 +167,10 @@ public class SnapshotAbility : Ability
 
     public override void onUpdate()
     {
+        if (cooldownTimer > 0f)
+        {
+            cooldownTimer -= Time.deltaTime;
+        }
         Mouse mouse = Mouse.current;
 
         if (mouse == null)
@@ -336,9 +345,14 @@ public class SnapshotAbility : Ability
     {
         snapshottables = FindObjectsByType<SnapshotableObject>();
     }
+    private void TriggerCooldown()
+    {
+        cooldownTimer = cooldownDuration;
+    }
 
     private void takeSnapshot(SnapshotRectangle2D rect)
     {
+        TriggerCooldown();
         Vector2 size = rect.Size;
         if (size.x < minSnapshotWorldSize || size.y < minSnapshotWorldSize)
         {
