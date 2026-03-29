@@ -9,22 +9,67 @@ public static class ColorCollisionResolver
             return;
         }
 
+        ColorManager.ColorState selfColor = self.GetColor();
+        switch (selfColor)
+        {
+            case ColorManager.ColorState.Red:
+                ResolveRedEnemyTouch(self, target);
+                break;
+            case ColorManager.ColorState.Orange:
+                ResolveOrangeEnemyTouch(self, target);
+                break;
+        }
+    }
+
+    private static void ResolveRedEnemyTouch(EnemyBehavior self, GameObject target)
+    {
         EnemyBehavior touchedEnemy = target.GetComponentInParent<EnemyBehavior>();
         if (touchedEnemy != null && touchedEnemy != self)
         {
-            bool selfIsRed = self.GetColor() == ColorManager.ColorState.Red;
             bool targetIsRed = touchedEnemy.GetColor() == ColorManager.ColorState.Red;
-
-            if (selfIsRed && targetIsRed)
+            touchedEnemy.Die();
+            if (targetIsRed)
             {
-                touchedEnemy.Die();
                 self.Die();
-                return;
             }
+
+            return;
         }
 
-        if (TryGetTouchedColor(target, out ColorManager.ColorState touchedColor) && touchedColor == ColorManager.ColorState.Red)
+        ObjectBehavior touchedObject = target.GetComponentInParent<ObjectBehavior>();
+        if (touchedObject != null && touchedObject.GetColor() == ColorManager.ColorState.Green)
         {
+            touchedObject.Die();
+        }
+    }
+
+    private static void ResolveOrangeEnemyTouch(EnemyBehavior self, GameObject target)
+    {
+        TerrainBehavior touchedTerrain = target.GetComponentInParent<TerrainBehavior>();
+        if (touchedTerrain != null)
+        {
+            if (touchedTerrain.GetColor() == ColorManager.ColorState.Orange)
+            {
+                return;
+            }
+
+            touchedTerrain.Destroy();
+            self.Die();
+            return;
+        }
+
+        EnemyBehavior touchedEnemy = target.GetComponentInParent<EnemyBehavior>();
+        if (touchedEnemy != null && touchedEnemy != self)
+        {
+            touchedEnemy.Die();
+            self.Die();
+            return;
+        }
+
+        ObjectBehavior touchedObject = target.GetComponentInParent<ObjectBehavior>();
+        if (touchedObject != null)
+        {
+            touchedObject.Die();
             self.Die();
         }
     }
