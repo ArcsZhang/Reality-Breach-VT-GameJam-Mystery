@@ -44,7 +44,7 @@ public class TerrainBehavior : ColorManager
 
 	protected override void OnColorChanged(ColorState previousColor, ColorState newColor)
 	{
-		if (previousColor == ColorState.Yellow && newColor != ColorState.Yellow)
+		if (newColor != ColorState.Yellow)
 		{
 			// change its layer back to Default
 			gameObject.layer = LayerMask.NameToLayer("Wall");
