@@ -90,7 +90,11 @@
                 {
                     "name": "Replay",
                     "type": "Button",
+<<<<<<< HEAD
                     "id": "4696829f-252f-4993-8c9d-dda8cddd7673",
+=======
+                    "id": "d84383c9-1627-4f95-8fcc-1640e0ad32bc",
+>>>>>>> Jimmy
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -463,7 +467,11 @@
                 },
                 {
                     "name": "",
+<<<<<<< HEAD
                     "id": "f054d125-0ed5-401a-985b-ebf5741d0554",
+=======
+                    "id": "fe0357fd-356d-4b8d-8282-8a14d608137a",
+>>>>>>> Jimmy
                     "path": "<Keyboard>/r",
                     "interactions": "",
                     "processors": "",
