@@ -675,6 +675,7 @@ GameObject:
   - component: {fileID: 311857611}
   - component: {fileID: 311857610}
   - component: {fileID: 311857615}
+  - component: {fileID: 311857616}
   m_Layer: 8
   m_Name: Object
   m_TagString: Untagged
@@ -835,6 +836,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1be5e2f9ffb54524aa4dea36627d6ff1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SnapshotableObject
+--- !u!114 &311857616
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 311857609}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c4e651036bdea2419802cd83b2fe4d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TerrainBehavior
+  originalColor: 6
+  applyVisualColorToRenderer: 1
+  visualColorMode: 0
+  targetSpriteRenderer: {fileID: 0}
+  targetMeshRenderer: {fileID: 0}
 --- !u!1001 &345385779
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -934,6 +952,7 @@ GameObject:
   - component: {fileID: 432158508}
   - component: {fileID: 432158507}
   - component: {fileID: 432158512}
+  - component: {fileID: 432158513}
   m_Layer: 8
   m_Name: Object (1)
   m_TagString: Untagged
@@ -1094,6 +1113,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1be5e2f9ffb54524aa4dea36627d6ff1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SnapshotableObject
+--- !u!114 &432158513
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 432158506}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c4e651036bdea2419802cd83b2fe4d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TerrainBehavior
+  originalColor: 6
+  applyVisualColorToRenderer: 1
+  visualColorMode: 0
+  targetSpriteRenderer: {fileID: 0}
+  targetMeshRenderer: {fileID: 0}
 --- !u!1 &511407929
 GameObject:
   m_ObjectHideFlags: 0
@@ -1108,6 +1144,7 @@ GameObject:
   - component: {fileID: 511407931}
   - component: {fileID: 511407930}
   - component: {fileID: 511407935}
+  - component: {fileID: 511407936}
   m_Layer: 8
   m_Name: Object (3)
   m_TagString: Untagged
@@ -1268,6 +1305,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1be5e2f9ffb54524aa4dea36627d6ff1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SnapshotableObject
+--- !u!114 &511407936
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 511407929}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c4e651036bdea2419802cd83b2fe4d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TerrainBehavior
+  originalColor: 6
+  applyVisualColorToRenderer: 1
+  visualColorMode: 0
+  targetSpriteRenderer: {fileID: 0}
+  targetMeshRenderer: {fileID: 0}
 --- !u!1 &878900963
 GameObject:
   m_ObjectHideFlags: 0
@@ -1282,6 +1336,7 @@ GameObject:
   - component: {fileID: 878900965}
   - component: {fileID: 878900964}
   - component: {fileID: 878900969}
+  - component: {fileID: 878900970}
   m_Layer: 8
   m_Name: Object (2)
   m_TagString: Untagged
@@ -1442,6 +1497,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1be5e2f9ffb54524aa4dea36627d6ff1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SnapshotableObject
+--- !u!114 &878900970
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 878900963}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c4e651036bdea2419802cd83b2fe4d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TerrainBehavior
+  originalColor: 6
+  applyVisualColorToRenderer: 1
+  visualColorMode: 0
+  targetSpriteRenderer: {fileID: 0}
+  targetMeshRenderer: {fileID: 0}
 --- !u!1 &925928437
 GameObject:
   m_ObjectHideFlags: 0
