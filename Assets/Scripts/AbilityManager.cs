@@ -7,6 +7,7 @@ public class AbilityManager : MonoBehaviour
     [SerializeField] private int activeIndex;
     [SerializeField] private bool abilityInputEnabled = true;
     [SerializeField] private Camera worldCamera;
+    [SerializeField] private string iconName;
 
     private Ability active => IsValidAbilityIndex(activeIndex) ? abilities[activeIndex] : null;
 
@@ -16,6 +17,12 @@ public class AbilityManager : MonoBehaviour
         Snapshot = 1,
         Gravity = 2
     }
+    private string[] IconNames =
+    {
+        "FoldAbilityIcon",
+        "SnapshotAbilityIcon",
+        "GravityAbilityIcon"
+    };
 
     private void Awake()
     {
@@ -51,7 +58,6 @@ public class AbilityManager : MonoBehaviour
 
         if (keyboard.digit1Key.wasPressedThisFrame)
         {
-
             switchTo((int)AbilityType.Fold);
             Debug.Log("Switched to Fold");
         }
@@ -67,12 +73,15 @@ public class AbilityManager : MonoBehaviour
             else
             {
                 switchTo((int)AbilityType.Snapshot);
+
                 Debug.Log("Switched to Snapshot");
             }
         }
         else if (keyboard.digit3Key.wasPressedThisFrame)
         {
+            iconName = "GravityAbilityIcon";
             switchTo((int)AbilityType.Gravity);
+
             Debug.Log("Switched to Gravity");
         }
 
@@ -91,10 +100,17 @@ public class AbilityManager : MonoBehaviour
 
         if (active != null)
         {
+            iconName = IconNames[index];
             active.onAbilitySwitch();
-        }
+            GameObject go = GameObject.Find(iconName);
+            if (go != null)
+            {
+                GlowController controller = go.GetComponent<GlowController>();
+                controller.EnableGlow();
+            }
 
-        activeIndex = (int)index;
+            activeIndex = (int)index;
+        }
     }
 
     private bool IsValidAbilityIndex(int index)
