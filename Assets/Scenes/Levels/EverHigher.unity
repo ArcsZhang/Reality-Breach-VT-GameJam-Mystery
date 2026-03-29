@@ -878,6 +878,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 851886351021263127, guid: 1bc9b933f4001c340940dec825dd4392, type: 3}
+      propertyPath: originalColor
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 851886351021263127, guid: 1bc9b933f4001c340940dec825dd4392, type: 3}
       propertyPath: obstacleLayer.m_Bits
       value: 0
       objectReference: {fileID: 0}
@@ -1143,6 +1147,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 851886351021263127, guid: 1bc9b933f4001c340940dec825dd4392, type: 3}
+      propertyPath: originalColor
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 851886351021263127, guid: 1bc9b933f4001c340940dec825dd4392, type: 3}
       propertyPath: obstacleLayer.m_Bits
       value: 0
       objectReference: {fileID: 0}
@@ -1215,6 +1223,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 851886351021263127, guid: 1bc9b933f4001c340940dec825dd4392, type: 3}
+      propertyPath: originalColor
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 851886351021263127, guid: 1bc9b933f4001c340940dec825dd4392, type: 3}
       propertyPath: obstacleLayer.m_Bits
       value: 0
@@ -1784,6 +1796,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 851886351021263127, guid: 1bc9b933f4001c340940dec825dd4392, type: 3}
+      propertyPath: originalColor
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 851886351021263127, guid: 1bc9b933f4001c340940dec825dd4392, type: 3}
       propertyPath: obstacleLayer.m_Bits
       value: 0
@@ -2737,6 +2753,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 851886351021263127, guid: 1bc9b933f4001c340940dec825dd4392, type: 3}
+      propertyPath: originalColor
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 851886351021263127, guid: 1bc9b933f4001c340940dec825dd4392, type: 3}
       propertyPath: obstacleLayer.m_Bits
       value: 0
