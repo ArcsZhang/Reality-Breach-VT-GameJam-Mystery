@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -23,7 +22,10 @@ public class EnemyBehavior : ColorManager
 	private InputAction moveAction;
 	private Rigidbody2D rigidBody2D;
 	private Transform player;
+	private Portal portal;
 	private Vector2 moveInput;
+	public bool hasDied;
+	public bool isHidden;
 
 	public int isGrounded = 1;
 	public bool IsGrounded(){
@@ -34,12 +36,6 @@ public class EnemyBehavior : ColorManager
 	{
 		base.Awake();
 
-        GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
-        if (playerObject != null)
-            player = playerObject.transform;
-        else
-            Debug.LogWarning($"[EnemyController] No GameObject tagged 'Player' found in the scene.");
-
         playerInput = GetComponent<PlayerInput>();
 		rigidBody2D = GetComponent<Rigidbody2D>();
 		playerInput.defaultActionMap = "Player";
@@ -48,6 +44,46 @@ public class EnemyBehavior : ColorManager
 		if (moveAction == null)
 		{
 			Debug.LogError($"Move action not found: {moveActionName}", this);
+		}
+	}
+
+	private void Start()
+	{
+		LevelManager manager = LevelManager.Instance;
+		if (manager != null)
+		{
+			if (manager.TryGetPortal(out Portal resolvedPortal))
+			{
+				portal = resolvedPortal;
+			}
+
+			if (manager.TryGetPlayer(out ObjectBehavior playerBehavior))
+			{
+				player = playerBehavior.transform;
+			}
+		}
+
+		if (portal == null)
+		{
+			portal = FindAnyObjectByType<Portal>();
+		}
+
+		if (player == null)
+		{
+			ObjectBehavior[] allObjects = FindObjectsByType<ObjectBehavior>();
+			for (int i = 0; i < allObjects.Length; i++)
+			{
+				if (allObjects[i].isPlayer)
+				{
+					player = allObjects[i].transform;
+					break;
+				}
+			}
+		}
+
+		if (player == null)
+		{
+			Debug.LogWarning("[EnemyBehavior] No player with ObjectBehavior.isPlayer was found.", this);
 		}
 	}
 
@@ -99,7 +135,7 @@ public class EnemyBehavior : ColorManager
 
 	protected override void OnRedUpdate()
 	{
-        if (player == null)
+        if (player == null || player.GetComponent<ObjectBehavior>() == null || player.GetComponent<ObjectBehavior>().hasDied)
             return;
         if (!IsVisible())
             return;
@@ -178,20 +214,52 @@ public class EnemyBehavior : ColorManager
 		rigidBody2D.linearVelocity = Vector2.ClampMagnitude(newVelocity, moveSpeed);
 	}
 
+	public void Die()
+	{
+		if (hasDied)
+		{
+			return;
+		}
+
+		hasDied = true;
+
+		if (portal == null)
+		{
+			LevelManager manager = LevelManager.Instance;
+			if (manager != null && manager.TryGetPortal(out Portal resolvedPortal))
+			{
+				portal = resolvedPortal;
+			}
+			else
+			{
+				portal = FindAnyObjectByType<Portal>();
+			}
+		}
+
+		if (portal != null)
+		{
+			portal.DecrementEnemiesLeft();
+		}
+
+		gameObject.SetActive(false);
+	}
+
     private void OnCollisionEnter2D(Collision2D col)
     {
-		if (GetColor() != ColorState.Red)
-			return;
-		ColorState colColor = col.gameObject.GetComponent<ColorManager>().GetColor();
-		
-		if (col.gameObject.GetComponent<EnemyBehavior>() != null || colColor == ColorState.Green)
+		if (col == null)
 		{
-			col.gameObject.SetActive(false);
+			return;
 		}
+
+		ColorCollisionResolver.ResolveEnemyTouch(this, col.gameObject);
     }
 
     private void MoveTowardPlayer()
     {
+		if (player == null || player.GetComponent<ObjectBehavior>() == null || player.GetComponent<ObjectBehavior>().hasDied)
+		{
+			return;
+		}
         Vector2 direction = ((Vector2)player.position - (Vector2)transform.position).normalized;
 		rigidBody2D.AddForce(direction * redAcceleration);
     }

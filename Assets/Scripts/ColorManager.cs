@@ -119,11 +119,15 @@ public class ColorManager : MonoBehaviour
 
         ResolveVisualTargets();
 
+        ColorState previousColor = currentColor;
         currentColor = originalColor;
         if (applyVisualColorToRenderer)
         {
             ApplyRendererColor(currentColor);
         }
+
+        DispatchPerColorChanged(previousColor, currentColor);
+        OnColorChanged(previousColor, currentColor);
 
         isInitialized = true;
     }
