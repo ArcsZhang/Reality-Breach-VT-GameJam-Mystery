@@ -49,6 +49,54 @@ public class AbilityManager : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        EnsureActiveAbilityIsAllowed();
+    }
+
+    /// <summary>
+    /// When a LevelManager is present, abilities are allowed only if enabled on that level.
+    /// With no LevelManager, all configured abilities are allowed.
+    /// </summary>
+    public bool IsAbilityAllowed(int abilityIndex)
+    {
+        if (!IsValidAbilityIndex(abilityIndex))
+        {
+            return false;
+        }
+
+        if (LevelManager.Instance == null)
+        {
+            return true;
+        }
+
+        return LevelManager.Instance.IsAbilityAllowed((AbilityType)abilityIndex);
+    }
+
+    private void EnsureActiveAbilityIsAllowed()
+    {
+        if (abilities == null || abilities.Length == 0)
+        {
+            return;
+        }
+
+        if (IsAbilityAllowed(activeIndex))
+        {
+            return;
+        }
+
+        for (int i = 0; i < abilities.Length; i++)
+        {
+            if (IsValidAbilityIndex(i) && IsAbilityAllowed(i))
+            {
+                switchTo(i);
+                return;
+            }
+        }
+
+        Debug.LogWarning("AbilityManager: no abilities are allowed for this level. Input will be ignored.", this);
+    }
+
     // Check ability every frame
     private void Update()
     {
@@ -58,7 +106,7 @@ public class AbilityManager : MonoBehaviour
             return;
         }
 
-        if (keyboard.digit1Key.wasPressedThisFrame)
+        if (keyboard.digit1Key.wasPressedThisFrame && IsAbilityAllowed((int)AbilityType.Fold))
         {
             switchTo((int)AbilityType.Fold);
             Debug.Log("Switched to Fold");
@@ -66,22 +114,23 @@ public class AbilityManager : MonoBehaviour
         else if (keyboard.digit2Key.wasPressedThisFrame)
         {
             if (activeIndex == (int)AbilityType.Snapshot &&
+                IsAbilityAllowed((int)AbilityType.Snapshot) &&
                 abilities.Length > (int)AbilityType.Snapshot &&
                 abilities[(int)AbilityType.Snapshot] is SnapshotAbility snapshotAbility &&
                 snapshotAbility.TryPasteSnapshotAtCursor())
             {
                 // Snapshot already active: paste held capture at cursor (does not re-run ability switch).
             }
-            else
+            else if (IsAbilityAllowed((int)AbilityType.Snapshot))
             {
                 switchTo((int)AbilityType.Snapshot);
 
                 Debug.Log("Switched to Snapshot");
             }
         }
-        else if (keyboard.digit3Key.wasPressedThisFrame)
+        else if (keyboard.digit3Key.wasPressedThisFrame && IsAbilityAllowed((int)AbilityType.Gravity))
         {
-			if (!audioSource.isPlaying)
+			if (audioSource != null && !audioSource.isPlaying)
 			{
 				audioSource.Play();
 			}
@@ -93,13 +142,14 @@ public class AbilityManager : MonoBehaviour
 
         if (!abilityInputEnabled) return;
         if (abilities == null || abilities.Length == 0) return;
-        if (abilityInputEnabled && active != null)
+        if (abilityInputEnabled && active != null && IsAbilityAllowed(activeIndex))
             active.onUpdate();
     }
     private void switchTo(int index)
     {
-        if (!IsValidAbilityIndex(index))
+        if (!IsValidAbilityIndex(index) || !IsAbilityAllowed(index))
         {
+            Debug.Log("Ability not allowed");
             return;
         }
 
