@@ -1672,7 +1672,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 8300000, guid: d8ce24c9e8a15cd4893a9c256b87a563, type: 3}
+  m_Resource: {fileID: 8300000, guid: 7ad6418381d36d84abbfe99c77da1398, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -2183,7 +2183,6 @@ PrefabInstance:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 8197092163335067391}
   - {fileID: 252210028}
   - {fileID: 964470369}
   - {fileID: 1176804805}
@@ -2204,3 +2203,4 @@ SceneRoots:
   - {fileID: 263534917}
   - {fileID: 352947426}
   - {fileID: 1304017359}
+  - {fileID: 8197092163335067391}
