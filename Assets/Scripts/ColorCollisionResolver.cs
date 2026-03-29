@@ -18,6 +18,9 @@ public static class ColorCollisionResolver
             case ColorManager.ColorState.Orange:
                 ResolveOrangeTouch(self, target);
                 break;
+            case ColorManager.ColorState.Blue:
+                ResolveBlueFragileTouch(self, target);
+                break;
         }
     }
 
@@ -35,6 +38,9 @@ public static class ColorCollisionResolver
                 break;
             case ColorManager.ColorState.Orange:
                 ResolveOrangeTouch(self, target);
+                break;
+            case ColorManager.ColorState.Blue:
+                ResolveBlueFragileTouch(self, target);
                 break;
             case ColorManager.ColorState.Green:
                 if (TryGetTouchedColor(target, out ColorManager.ColorState touchedColor) && touchedColor == ColorManager.ColorState.Red)
@@ -59,6 +65,9 @@ public static class ColorCollisionResolver
                 ResolveRedTouch(self, target);
                 break;
             case ColorManager.ColorState.Orange:
+                break;
+            case ColorManager.ColorState.Blue:
+                ResolveBlueFragileTouch(self, target);
                 break;
         }
     }
@@ -105,6 +114,39 @@ public static class ColorCollisionResolver
 
         KillColorManagerTarget(touchedColorManager);
         KillColorManagerTarget(self);
+    }
+
+    private static void ResolveBlueFragileTouch(ColorManager self, GameObject target)
+    {
+        EnemyBehavior touchedEnemy = target.GetComponentInParent<EnemyBehavior>();
+        if (touchedEnemy != null && touchedEnemy != self)
+        {
+            if (touchedEnemy.GetColor() == ColorManager.ColorState.Blue)
+            {
+                touchedEnemy.Die();
+            }
+
+            KillColorManagerTarget(self);
+            return;
+        }
+
+        ObjectBehavior touchedObject = target.GetComponentInParent<ObjectBehavior>();
+        if (touchedObject != null && touchedObject != self)
+        {
+            if (touchedObject.GetColor() == ColorManager.ColorState.Blue)
+            {
+                touchedObject.Die();
+            }
+
+            KillColorManagerTarget(self);
+            return;
+        }
+
+        TerrainBehavior touchedTerrain = target.GetComponentInParent<TerrainBehavior>();
+        if (touchedTerrain != null && touchedTerrain != self && touchedTerrain.GetColor() == ColorManager.ColorState.Red)
+        {
+            KillColorManagerTarget(self);
+        }
     }
 
     private static void KillColorManagerTarget(ColorManager target)

@@ -29,6 +29,11 @@ public class FoldAbility : Ability   // Extends ability
     [SerializeField] private float lineHalfLength = 40f;
     [SerializeField] private float unfoldNodeRadius = 0.25f;
 
+    [Header("Initial Fold")]
+    [SerializeField] private bool applyInitialFoldOnStart = false;
+    [SerializeField] private Vector2 initialFoldStartPoint = new Vector2(-2f, 0f);
+    [SerializeField] private Vector2 initialFoldEndPoint = new Vector2(2f, 0f);
+
     [Header("Visuals")]
     [SerializeField] private Color previewLineColor = new Color(1f, 0.85f, 0.2f, 0.8f);
     [SerializeField] private Color previewStripColor = new Color(1f, 0.85f, 0.2f, 0.14f);
@@ -75,6 +80,11 @@ public class FoldAbility : Ability   // Extends ability
         InitializeVisuals();
         HidePreviewVisuals();
         SetActiveFoldVisualsVisible(false);
+    }
+
+    private void Start()
+    {
+        TryApplyInitialFold();
     }
 
     public override void onUpdate()
@@ -207,13 +217,22 @@ public class FoldAbility : Ability   // Extends ability
     // Applies the fold on the 2D object
     public void ApplyFold(FoldData2D fold)
     {
-        ApplyFold(fold, Vector2.zero);
+        ApplyFold(fold, Vector2.zero, true);
     }
 
     // ITerates over every foldable object
     private void ApplyFold(FoldData2D fold, Vector2 nodePoint)
     {
-        TriggerCooldown();
+        ApplyFold(fold, nodePoint, true);
+    }
+
+    private void ApplyFold(FoldData2D fold, Vector2 nodePoint, bool triggerCooldown)
+    {
+        if (triggerCooldown)
+        {
+            TriggerCooldown();
+        }
+
         Debug.Log($"Applying fold: Normal={fold.Normal}, Lo={fold.Lo}, Hi={fold.Hi}, Gap={fold.Gap} and there are {foldables.Length} foldable objects");
         if (foldables == null || foldables.Length == 0)
         {
@@ -245,6 +264,27 @@ public class FoldAbility : Ability   // Extends ability
 
         UpdateActiveFoldVisuals();
         FoldApplied?.Invoke(activeFold);
+    }
+
+    private void TryApplyInitialFold()
+    {
+        if (!applyInitialFoldOnStart)
+        {
+            return;
+        }
+
+        if (hasActiveFold)
+        {
+            return;
+        }
+
+        if (!FoldGeometry2D.TryBuildFold(initialFoldStartPoint, initialFoldEndPoint, out FoldData2D initialFold, minimumFoldDistance))
+        {
+            Debug.LogWarning("Initial fold could not be applied: points are too close or invalid.", this);
+            return;
+        }
+
+        ApplyFold(initialFold, initialFoldStartPoint, false);
     }
 
     private void ShiftNonFoldableObjects(FoldData2D fold)
