@@ -31,6 +31,7 @@ public class EnemyBehavior : ColorManager
 	private Rigidbody2D rigidBody2D;
 	private SpriteRenderer spriteRenderer;
 	private Transform player;
+	private Renderer playerRenderer;
 	private Portal portal;
 	private Vector2 moveInput;
 	private float fireTimer;
@@ -94,6 +95,7 @@ public class EnemyBehavior : ColorManager
 		{
 			Debug.LogWarning("[EnemyBehavior] No player with ObjectBehavior.isPlayer was found.", this);
 		}
+		playerRenderer = player.GetComponent<Renderer>();
 	}
 
 	private void OnEnable()
@@ -165,10 +167,15 @@ public class EnemyBehavior : ColorManager
 
 	protected override void OnYellowUpdate()
 	{
-		if (player == null)
-			return;
+		if (player == null || player.GetComponent<ObjectBehavior>() == null || player.GetComponent<ObjectBehavior>().hasDied)
+            return;
 		if (!IsVisible())
 			return;
+
+		if (playerRenderer == null || playerRenderer.enabled == false)
+		{
+			return;
+		}
 		
 		RotateTowardPlayer();
 
@@ -292,7 +299,6 @@ public class EnemyBehavior : ColorManager
 		{
 			return;
 		}
-		Renderer playerRenderer = player.GetComponent<Renderer>();
 		if (playerRenderer == null || playerRenderer.enabled == false)
 		{
 			return;
@@ -325,7 +331,6 @@ public class EnemyBehavior : ColorManager
 		Vector2 direction = ((Vector2)player.position - (Vector2)transform.position).normalized;
 		Vector2 spawnPoint = (Vector2)transform.position + direction * projectileSpawnDistance;
 
-		projectileObject.GetComponent<ProjectileManager>().source = this;
 		GameObject projectile = Instantiate(projectileObject, spawnPoint, transform.rotation);
 	}
 
