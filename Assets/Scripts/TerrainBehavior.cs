@@ -4,6 +4,7 @@ using UnityEngine;
 public class TerrainBehavior : ColorManager
 {
     private FoldableObject2D foldableObject;
+	private bool hasDestroyed = false;
 
     protected override void Awake()
     {
@@ -66,4 +67,14 @@ public class TerrainBehavior : ColorManager
     protected override void OnWhiteUpdate()
     {
     }
+
+	public void Destroy()
+	{
+		if (hasDestroyed)
+		{
+			return;
+		}
+		hasDestroyed = true;
+		gameObject.SetActive(false);
+	}
 }
