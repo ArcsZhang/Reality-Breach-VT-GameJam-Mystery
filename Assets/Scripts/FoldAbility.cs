@@ -9,6 +9,7 @@ public class FoldAbility : Ability   // Extends ability
     {
         public Transform Target;
         public Vector3 OriginalPosition;
+        public bool WasHiddenInStrip;
         public Rigidbody2D Body;
         public bool HadBody;
         public bool BodySimulated;
@@ -170,7 +171,10 @@ public class FoldAbility : Ability   // Extends ability
             CacheFoldables();
         }
 
-        RestoreShiftedNonFoldableObjects();
+        if (hasActiveFold)
+        {
+            RestoreShiftedNonFoldableObjects(activeFold);
+        }
 
         for (int i = 0; i < foldables.Length; i++)
         {
@@ -200,7 +204,14 @@ public class FoldAbility : Ability   // Extends ability
             CacheFoldables();
         }
 
-        RestoreShiftedNonFoldableObjects();
+        if (hasActiveFold)
+        {
+            RestoreShiftedNonFoldableObjects(activeFold);
+        }
+        else
+        {
+            nonFoldableStates.Clear();
+        }
 
         activeFold = fold;
         hasActiveFold = true;
@@ -250,6 +261,7 @@ public class FoldAbility : Ability   // Extends ability
             }
 
             NonFoldableState state = CaptureNonFoldableState(candidate, worldPosition);
+            state.WasHiddenInStrip = fullyInsideStrip;
             nonFoldableStates[candidate] = state;
 
             if (fullyInsideStrip)
@@ -270,8 +282,10 @@ public class FoldAbility : Ability   // Extends ability
         }
     }
 
-    private void RestoreShiftedNonFoldableObjects()
+    private void RestoreShiftedNonFoldableObjects(FoldData2D fold)
     {
+        MoveCurrentDestObjectsBackOnUnfold(fold);
+
         if (nonFoldableStates.Count == 0)
         {
             return;
@@ -282,6 +296,11 @@ public class FoldAbility : Ability   // Extends ability
             NonFoldableState state = entry.Value;
             Transform target = state.Target;
             if (state == null || target == null)
+            {
+                continue;
+            }
+
+            if (!state.WasHiddenInStrip)
             {
                 continue;
             }
@@ -303,6 +322,46 @@ public class FoldAbility : Ability   // Extends ability
         }
 
         nonFoldableStates.Clear();
+    }
+
+    private void MoveCurrentDestObjectsBackOnUnfold(FoldData2D fold)
+    {
+        Vector3 unshiftDelta = new Vector3(fold.Normal.x * fold.Gap, fold.Normal.y * fold.Gap, 0f);
+        Transform[] allTransforms = FindObjectsByType<Transform>();
+
+        for (int i = 0; i < allTransforms.Length; i++)
+        {
+            Transform candidate = allTransforms[i];
+            if (!IsShiftableNonFoldable(candidate))
+            {
+                continue;
+            }
+
+            if (nonFoldableStates.TryGetValue(candidate, out NonFoldableState capturedState) && capturedState.WasHiddenInStrip)
+            {
+                continue;
+            }
+
+            if (!TryGetProjectionRange(candidate, fold.Normal, out float minProjection, out _))
+            {
+                continue;
+            }
+
+            if (minProjection <= fold.Lo)
+            {
+                continue;
+            }
+
+            Rigidbody2D body = candidate.GetComponent<Rigidbody2D>();
+            if (body != null)
+            {
+                body.position += new Vector2(unshiftDelta.x, unshiftDelta.y);
+            }
+            else
+            {
+                candidate.position += unshiftDelta;
+            }
+        }
     }
 
     private NonFoldableState CaptureNonFoldableState(Transform candidate, Vector3 originalPosition)

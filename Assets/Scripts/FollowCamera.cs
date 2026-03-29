@@ -9,7 +9,7 @@ public class FollowCamera : MonoBehaviour
 
     void LateUpdate()
     {
-        Debug.Log("Camera is updating to: " + player.position);
+        // Debug.Log("Camera is updating to: " + player.position);
         Vector3 target = player.position + offset;
         transform.position = target;
     }
