@@ -5,6 +5,8 @@ using UnityEngine.InputSystem.Controls;
 
 public class FoldAbility : Ability   // Extends ability
 {
+    public static bool IsAnyFoldActive { get; private set; }
+
     private sealed class NonFoldableState
     {
         public Transform Target;
@@ -71,6 +73,8 @@ public class FoldAbility : Ability   // Extends ability
 
     private void Awake()
     {
+        IsAnyFoldActive = false;
+
         if (WorldCamera == null)
         {
             WorldCamera = Camera.main;
@@ -210,6 +214,7 @@ public class FoldAbility : Ability   // Extends ability
         }
 
         hasActiveFold = false;
+        IsAnyFoldActive = false;
         SetActiveFoldVisualsVisible(false);
         FoldCleared?.Invoke();
     }
@@ -250,6 +255,7 @@ public class FoldAbility : Ability   // Extends ability
 
         activeFold = fold;
         hasActiveFold = true;
+        IsAnyFoldActive = true;
         unfoldNodePosition = nodePoint;
 
         for (int i = 0; i < foldables.Length; i++)
@@ -859,5 +865,15 @@ public class FoldAbility : Ability   // Extends ability
         Debug.Log("Switching away from Fold ability, clearing fold and visuals.");
         CancelSelection();
         HidePreviewVisuals();
+    }
+
+    private void OnDisable()
+    {
+        IsAnyFoldActive = false;
+    }
+
+    private void OnDestroy()
+    {
+        IsAnyFoldActive = false;
     }
 }

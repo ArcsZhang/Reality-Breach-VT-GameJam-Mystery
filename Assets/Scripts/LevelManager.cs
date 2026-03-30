@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
+[RequireComponent(typeof(PlayerInput))]
 public class LevelManager : MonoBehaviour
 {
 	public static LevelManager Instance { get; private set; }
@@ -13,6 +14,7 @@ public class LevelManager : MonoBehaviour
 	[SerializeField] public ObjectBehavior player;
 
 	private PlayerInput playerInput;
+	private InputAction moveAction;
 	private InputAction restartAction;
 	private bool isRestarting;
 	[Header("Abilities per level")]
@@ -34,7 +36,7 @@ public class LevelManager : MonoBehaviour
 
 	private void Start()
     {
-		BindRestartAction();
+		BindInputActions();
 		ResolveSceneReferences();
 
 		if (portal != null)
@@ -45,11 +47,12 @@ public class LevelManager : MonoBehaviour
 
 	private void OnEnable()
 	{
-		BindRestartAction();
+		BindInputActions();
 	}
 
 	private void OnDisable()
 	{
+		moveAction?.Disable();
 		restartAction?.Disable();
 	}
 
@@ -68,7 +71,7 @@ public class LevelManager : MonoBehaviour
 		}
 	}
 
-	private void BindRestartAction()
+	private void BindInputActions()
 	{
 		if (playerInput == null)
 		{
@@ -81,11 +84,30 @@ public class LevelManager : MonoBehaviour
 		}
 
 		playerInput.defaultActionMap = "Player";
+		if (playerInput.currentActionMap == null || playerInput.currentActionMap.name != "Player")
+		{
+			playerInput.SwitchCurrentActionMap("Player");
+		}
+
+		moveAction = playerInput.actions != null
+			? playerInput.actions.FindAction("Move", throwIfNotFound: false)
+			: null;
 		restartAction = playerInput.actions != null
 			? playerInput.actions.FindAction("Restart", throwIfNotFound: false)
 			: null;
 
+		moveAction?.Enable();
 		restartAction?.Enable();
+	}
+
+	public Vector2 ReadMoveInput()
+	{
+		if (moveAction == null)
+		{
+			return Vector2.zero;
+		}
+
+		return moveAction.ReadValue<Vector2>();
 	}
 
 	private void OnDestroy()

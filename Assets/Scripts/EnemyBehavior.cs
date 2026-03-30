@@ -1,9 +1,6 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
-using static Unity.VisualScripting.Member;
 
 [RequireComponent(typeof(Rigidbody2D))]
-[RequireComponent(typeof(PlayerInput))]
 public class EnemyBehavior : ColorManager
 {
 	[Tooltip("Any layer that should obstruct line of site.")]
@@ -21,14 +18,11 @@ public class EnemyBehavior : ColorManager
 	[SerializeField] private float moveSpeed = 6f;
 	[SerializeField] private float acceleration = 80f;
 	[SerializeField] private float deceleration = 100f;
-	[SerializeField] private string moveActionName = "Move";
 
 	[Header("Blue Movement")]
 	[SerializeField] private float blueAcceleration = 15f;
 	[SerializeField] private float blueDetectionRange = 3f;
 
-	private PlayerInput playerInput;
-	private InputAction moveAction;
 	private Rigidbody2D rigidBody2D;
 	private SpriteRenderer spriteRenderer;
 	private Transform player;
@@ -48,16 +42,8 @@ public class EnemyBehavior : ColorManager
 	{
 		base.Awake();
 
-        playerInput = GetComponent<PlayerInput>();
 		rigidBody2D = GetComponent<Rigidbody2D>();
 		defaultGravityScale = rigidBody2D != null ? rigidBody2D.gravityScale : 1f;
-		playerInput.defaultActionMap = "Player";
-		moveAction = playerInput.actions[moveActionName];
-
-		if (moveAction == null)
-		{
-			Debug.LogError($"Move action not found: {moveActionName}", this);
-		}
 	}
 
 	private void Start()
@@ -102,16 +88,6 @@ public class EnemyBehavior : ColorManager
 		{
 			playerRenderer = player.GetComponent<Renderer>();
 		}
-	}
-
-	private void OnEnable()
-	{
-		moveAction?.Enable();
-	}
-
-	private void OnDisable()
-	{
-		moveAction?.Disable();
 	}
 
 	protected override void OnRedChanged(ColorState previous)
@@ -204,12 +180,14 @@ public class EnemyBehavior : ColorManager
 
 	protected override void OnGreenUpdate()
 	{
-		if (moveAction == null)
+		LevelManager manager = LevelManager.Instance;
+		if (manager == null)
 		{
+			moveInput = Vector2.zero;
 			return;
 		}
 
-		moveInput = moveAction.ReadValue<Vector2>().normalized;
+		moveInput = manager.ReadMoveInput().normalized;
 	}
 
 	protected override void OnBlueUpdate()
@@ -370,6 +348,6 @@ public class EnemyBehavior : ColorManager
 	private void OnTriggerExit2D(Collider2D collision)
 	{
 		if (collision.gameObject.layer == 6) isGrounded -= 1;
-		if (!IsGrounded() && Physics2D.gravity == Vector2.zero) Die();
+		if (!FoldAbility.IsAnyFoldActive && !IsGrounded() && Physics2D.gravity == Vector2.zero) Die();
 	}
 }

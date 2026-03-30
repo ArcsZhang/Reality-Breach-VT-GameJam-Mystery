@@ -5,23 +5,41 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/SampleScene.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
   - enabled: 1
+    path: Assets/Scenes/Justin's Levels & Tutorials/Fold.unity
+    guid: 40569214a978a2a41b7935ab507defe0
+  - enabled: 1
+    path: Assets/Scenes/Justin's Levels & Tutorials/Gravity.unity
+    guid: 7613b80c199789542beace4182d18018
+  - enabled: 1
+    path: Assets/Scenes/Justin's Levels & Tutorials/Snapshot.unity
+    guid: 6d1a9ff431c49c84ab0dca08b7235fe0
+  - enabled: 0
     path: Assets/Scenes/Levels/TheWallsAreLavaFold.unity
     guid: f649731eedd0c4c0bab14a8b6cdcf2aa
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Levels/Snap&Shot.unity
     guid: e6e7c4274376f4da0aa470668964d511
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Levels/FatalFolds.unity
     guid: a40b7499617953749ac26a9c3cde5bce
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Levels/EverHigher.unity
     guid: de13e6793482e467783d7dc5fb24f30a
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Levels/FoldFallFwoosh.unity
     guid: afcfa44e4d09d4b39823ae5351ccdce8
+  - enabled: 0
+    path: Assets/Scenes/Levels/FinaleScene.unity
+    guid: 3eba0e645a00e4d2eb91fc56fff6116f
+  - enabled: 0
+    path: Assets/Scenes/Levels/GravityGambit.unity
+    guid: 9153694d3154bf745a60183a822947d9
+  - enabled: 0
+    path: Assets/Scenes/Levels/tets.unity
+    guid: 3fe1ae7d30eab44d98349b4704096796
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
