@@ -65,12 +65,6 @@ public class FoldAbility : Ability   // Extends ability
     public System.Action<FoldData2D> FoldApplied;
     public System.Action FoldCleared;
 
-    //Cooldowns
-    [SerializeField] private float cooldownDuration = 6f; // different per ability
-    private float cooldownTimer = 0f;
-    public bool IsOnCooldown => cooldownTimer > 0f;
-    public float GetCooldownProgress() => Mathf.Clamp01(cooldownTimer / cooldownDuration);
-
     private void Awake()
     {
         IsAnyFoldActive = false;
@@ -93,11 +87,6 @@ public class FoldAbility : Ability   // Extends ability
 
     public override void onUpdate()
     {
-        if(cooldownTimer > 0f)
-        {
-            cooldownTimer -= Time.deltaTime;
-        }
-
         Keyboard keyboard = Keyboard.current;
         Mouse mouse = Mouse.current;
 
@@ -123,11 +112,6 @@ public class FoldAbility : Ability   // Extends ability
         // If no fold is currently selected, nd pressed anywhere, start a fold centroid there. 
         if (WasMouseButtonPressedThisFrame(mouse, foldMouseButton))
         {
-            if (cooldownTimer > 0f)
-            {
-                Debug.Log("Fold is on cooldown!");
-                return;
-            }
             BeginFoldSelection(mouseWorldPoint);
         }
 
@@ -222,22 +206,12 @@ public class FoldAbility : Ability   // Extends ability
     // Applies the fold on the 2D object
     public void ApplyFold(FoldData2D fold)
     {
-        ApplyFold(fold, Vector2.zero, true);
+        ApplyFold(fold, Vector2.zero);
     }
 
     // ITerates over every foldable object
     private void ApplyFold(FoldData2D fold, Vector2 nodePoint)
     {
-        ApplyFold(fold, nodePoint, true);
-    }
-
-    private void ApplyFold(FoldData2D fold, Vector2 nodePoint, bool triggerCooldown)
-    {
-        if (triggerCooldown)
-        {
-            TriggerCooldown();
-        }
-
         Debug.Log($"Applying fold: Normal={fold.Normal}, Lo={fold.Lo}, Hi={fold.Hi}, Gap={fold.Gap} and there are {foldables.Length} foldable objects");
         if (foldables == null || foldables.Length == 0)
         {
@@ -290,7 +264,7 @@ public class FoldAbility : Ability   // Extends ability
             return;
         }
 
-        ApplyFold(initialFold, initialFoldStartPoint, false);
+        ApplyFold(initialFold, initialFoldStartPoint);
     }
 
     private void ShiftNonFoldableObjects(FoldData2D fold)
@@ -850,11 +824,6 @@ public class FoldAbility : Ability   // Extends ability
         Gizmos.color = Color.white;
         Gizmos.DrawWireSphere(unfoldNodePosition, unfoldNodeRadius);
     }
-    private void TriggerCooldown()
-    {
-        cooldownTimer = cooldownDuration;
-    }
-
     public override void onClear()
     {
         ClearActiveFold();

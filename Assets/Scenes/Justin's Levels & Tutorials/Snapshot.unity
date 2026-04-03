@@ -3939,6 +3939,14 @@ PrefabInstance:
       propertyPath: nextLevelName
       value: FatalFolds
       objectReference: {fileID: 0}
+    - target: {fileID: 4074170016822790427, guid: 083276caa1093364c8f12f70b25c0fb2, type: 3}
+      propertyPath: allowFoldAbility
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4074170016822790427, guid: 083276caa1093364c8f12f70b25c0fb2, type: 3}
+      propertyPath: allowGravityAbility
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

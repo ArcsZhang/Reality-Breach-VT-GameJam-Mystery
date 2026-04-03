@@ -3562,14 +3562,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 14881461185388809, guid: 726fd283d7cf2bc47b0703fb64e1ba1f, type: 3}
-      propertyPath: abilities.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 14881461185388809, guid: 726fd283d7cf2bc47b0703fb64e1ba1f, type: 3}
-      propertyPath: 'abilities.Array.data[0]'
-      value: 
-      objectReference: {fileID: 922839060478095106}
     - target: {fileID: 1540310985401754950, guid: 726fd283d7cf2bc47b0703fb64e1ba1f, type: 3}
       propertyPath: m_Name
       value: AbilityManager
@@ -3623,17 +3615,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 726fd283d7cf2bc47b0703fb64e1ba1f, type: 3}
---- !u!114 &922839060478095106 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2906907184250665350, guid: 726fd283d7cf2bc47b0703fb64e1ba1f, type: 3}
-  m_PrefabInstance: {fileID: 922839060478095105}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c3853d5aa734a8c42bd8287db2cb57ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GravityAbility
 --- !u!1001 &1236818996389948379
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3876,6 +3857,14 @@ PrefabInstance:
     - target: {fileID: 4074170016822790427, guid: 083276caa1093364c8f12f70b25c0fb2, type: 3}
       propertyPath: nextLevelName
       value: Snapshot
+      objectReference: {fileID: 0}
+    - target: {fileID: 4074170016822790427, guid: 083276caa1093364c8f12f70b25c0fb2, type: 3}
+      propertyPath: allowFoldAbility
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4074170016822790427, guid: 083276caa1093364c8f12f70b25c0fb2, type: 3}
+      propertyPath: allowSnapshotAbility
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -208,7 +208,7 @@ MonoBehaviour:
   targetMeshRenderer: {fileID: 0}
   obstacleLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 256
   redAcceleration: 1
   projectileObject: {fileID: 8840789182456116912, guid: d5e35a929b025cb418b004371ef1aaf5, type: 3}
   fireRate: 0.5

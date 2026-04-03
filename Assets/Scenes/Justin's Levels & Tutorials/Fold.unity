@@ -2361,14 +2361,6 @@ PrefabInstance:
       propertyPath: initialFoldStartPoint.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 14881461185388809, guid: 726fd283d7cf2bc47b0703fb64e1ba1f, type: 3}
-      propertyPath: activeIndex
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 14881461185388809, guid: 726fd283d7cf2bc47b0703fb64e1ba1f, type: 3}
-      propertyPath: abilities.Array.size
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 1540310985401754950, guid: 726fd283d7cf2bc47b0703fb64e1ba1f, type: 3}
       propertyPath: m_Name
       value: AbilityManager
@@ -2660,6 +2652,14 @@ PrefabInstance:
     - target: {fileID: 4074170016822790427, guid: 083276caa1093364c8f12f70b25c0fb2, type: 3}
       propertyPath: nextLevelName
       value: Gravity
+      objectReference: {fileID: 0}
+    - target: {fileID: 4074170016822790427, guid: 083276caa1093364c8f12f70b25c0fb2, type: 3}
+      propertyPath: allowGravityAbility
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4074170016822790427, guid: 083276caa1093364c8f12f70b25c0fb2, type: 3}
+      propertyPath: allowSnapshotAbility
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

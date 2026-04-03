@@ -179,6 +179,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Wall (7)
       objectReference: {fileID: 0}
+    - target: {fileID: 9161899175005878434, guid: c30a04e78db001542806b9f2696dec9a, type: 3}
+      propertyPath: originalColor
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -375,6 +379,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Wall (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 9161899175005878434, guid: c30a04e78db001542806b9f2696dec9a, type: 3}
+      propertyPath: originalColor
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -439,6 +447,10 @@ PrefabInstance:
     - target: {fileID: 7622137570767242318, guid: c30a04e78db001542806b9f2696dec9a, type: 3}
       propertyPath: m_Name
       value: Wall (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 9161899175005878434, guid: c30a04e78db001542806b9f2696dec9a, type: 3}
+      propertyPath: originalColor
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -901,6 +913,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Wall (11)
       objectReference: {fileID: 0}
+    - target: {fileID: 9161899175005878434, guid: c30a04e78db001542806b9f2696dec9a, type: 3}
+      propertyPath: originalColor
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -965,6 +981,10 @@ PrefabInstance:
     - target: {fileID: 7622137570767242318, guid: c30a04e78db001542806b9f2696dec9a, type: 3}
       propertyPath: m_Name
       value: Wall (4)
+      objectReference: {fileID: 0}
+    - target: {fileID: 9161899175005878434, guid: c30a04e78db001542806b9f2696dec9a, type: 3}
+      propertyPath: originalColor
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1292,6 +1312,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Wall (12)
       objectReference: {fileID: 0}
+    - target: {fileID: 9161899175005878434, guid: c30a04e78db001542806b9f2696dec9a, type: 3}
+      propertyPath: originalColor
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1356,6 +1380,10 @@ PrefabInstance:
     - target: {fileID: 7622137570767242318, guid: c30a04e78db001542806b9f2696dec9a, type: 3}
       propertyPath: m_Name
       value: Wall (6)
+      objectReference: {fileID: 0}
+    - target: {fileID: 9161899175005878434, guid: c30a04e78db001542806b9f2696dec9a, type: 3}
+      propertyPath: originalColor
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1605,6 +1633,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Wall (8)
       objectReference: {fileID: 0}
+    - target: {fileID: 9161899175005878434, guid: c30a04e78db001542806b9f2696dec9a, type: 3}
+      propertyPath: originalColor
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1645,6 +1677,10 @@ PrefabInstance:
     - target: {fileID: 3558181466900718440, guid: 4e0dba7b9293cb2499059de69b5c36fb, type: 3}
       propertyPath: m_Name
       value: Canvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 3558181466900718440, guid: 4e0dba7b9293cb2499059de69b5c36fb, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3582220917342510291, guid: 4e0dba7b9293cb2499059de69b5c36fb, type: 3}
       propertyPath: m_AnchorMax.y
@@ -1753,7 +1789,7 @@ PrefabInstance:
     - target: {fileID: 6694185318869420867, guid: 4e0dba7b9293cb2499059de69b5c36fb, type: 3}
       propertyPath: m_Camera
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 2129044607}
     - target: {fileID: 6694185318869420867, guid: 4e0dba7b9293cb2499059de69b5c36fb, type: 3}
       propertyPath: m_PlaneDistance
       value: 10
@@ -1901,7 +1937,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c4e651036bdea2419802cd83b2fe4d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TerrainBehavior
-  originalColor: 6
+  originalColor: 1
   applyVisualColorToRenderer: 1
   visualColorMode: 0
   targetSpriteRenderer: {fileID: 0}
@@ -2253,6 +2289,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Wall (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 9161899175005878434, guid: c30a04e78db001542806b9f2696dec9a, type: 3}
+      propertyPath: originalColor
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2361,7 +2401,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c4e651036bdea2419802cd83b2fe4d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TerrainBehavior
-  originalColor: 6
+  originalColor: 1
   applyVisualColorToRenderer: 1
   visualColorMode: 0
   targetSpriteRenderer: {fileID: 0}
@@ -2579,6 +2619,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Wall
       objectReference: {fileID: 0}
+    - target: {fileID: 9161899175005878434, guid: c30a04e78db001542806b9f2696dec9a, type: 3}
+      propertyPath: originalColor
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2704,6 +2748,10 @@ PrefabInstance:
     - target: {fileID: 7622137570767242318, guid: c30a04e78db001542806b9f2696dec9a, type: 3}
       propertyPath: m_Name
       value: Wall (13)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7622137570767242318, guid: c30a04e78db001542806b9f2696dec9a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3337,6 +3385,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Wall (5)
       objectReference: {fileID: 0}
+    - target: {fileID: 9161899175005878434, guid: c30a04e78db001542806b9f2696dec9a, type: 3}
+      propertyPath: originalColor
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3602,6 +3654,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b7d19033a5dea1d4cb342730925676bd, type: 3}
+--- !u!20 &2129044607 stripped
+Camera:
+  m_CorrespondingSourceObject: {fileID: 6459473168714199579, guid: 150f83bb9e5f8ef4abc03dbb821e4b5d, type: 3}
+  m_PrefabInstance: {fileID: 595538135}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

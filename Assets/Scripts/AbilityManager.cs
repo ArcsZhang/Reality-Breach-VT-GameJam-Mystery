@@ -52,6 +52,7 @@ public class AbilityManager : MonoBehaviour
     private void Start()
     {
         EnsureActiveAbilityIsAllowed();
+        ApplyAbilityIconVisibility();
     }
 
     /// <summary>
@@ -171,6 +172,31 @@ public class AbilityManager : MonoBehaviour
     private bool IsValidAbilityIndex(int index)
     {
         return abilities != null && index >= 0 && index < abilities.Length && abilities[index] != null;
+    }
+
+    private void ApplyAbilityIconVisibility()
+    {
+        int iconCount = Mathf.Min(IconNames.Length, abilities != null ? abilities.Length : 0);
+        for (int i = 0; i < iconCount; i++)
+        {
+            string iconObjectName = IconNames[i];
+            if (string.IsNullOrEmpty(iconObjectName))
+            {
+                continue;
+            }
+
+            GameObject iconObject = GameObject.Find(iconObjectName);
+            if (iconObject == null)
+            {
+                continue;
+            }
+
+            bool shouldShow = IsAbilityAllowed(i);
+            if (iconObject.activeSelf != shouldShow)
+            {
+                iconObject.SetActive(shouldShow);
+            }
+        }
     }
 
 }
